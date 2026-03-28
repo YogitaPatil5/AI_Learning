@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosine Similarity &amp; Distance | Deep Explainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--card:#f0efe9;--dark:#1a1a2e;--ink:#2d2d2d;--muted:#888;--accent:#e8604c;--accent2:#3d7ebf;--accent3:#2ebd8f;--accent4:#9b59b6;--border:#e0dfd8;--gold:#f0a500;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+.page{max-width:1080px;margin:0 auto;padding:36px 24px 80px;}
+.section-eyebrow{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--accent3);margin-bottom:8px;}
+.section-title{font-size:1.7rem;font-weight:800;line-height:1.2;color:var(--dark);margin-bottom:10px;}
+.section-body{font-size:.95rem;line-height:1.85;color:#444;max-width:840px;margin-bottom:22px;}
+.card{background:var(--surface);border-radius:16px;padding:24px;border:1px solid var(--border);margin-bottom:20px;box-shadow:0 2px 14px rgba(0,0,0,.05);}
+.card-title{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.formula-block{background:#0f1b2d;border-radius:12px;padding:18px 24px;margin:14px 0;}
+.formula-block.blue{border-left:4px solid var(--accent2);}
+.formula-block.green{border-left:4px solid var(--accent3);}
+.formula-block.red{border-left:4px solid var(--accent);}
+.formula-block.gold{border-left:4px solid var(--gold);}
+.formula-block.purple{border-left:4px solid var(--accent4);}
+.formula-block.teal{border-left:4px solid #06b6d4;}
+.f-lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.28);margin-bottom:8px;font-family:'DM Sans',sans-serif;}
+.formula{font-family:'Space Mono',monospace;font-size:1rem;color:#e2e8f0;line-height:2.4;text-align:center;}
+.formula.sm{font-size:.84rem;line-height:2.1;}
+.formula-caption{font-size:.74rem;color:rgba(255,255,255,.35);text-align:center;margin-top:8px;font-family:'DM Sans',sans-serif;line-height:1.65;}
+.hl{color:#fde047;font-weight:700;}.hlg{color:#4ade80;font-weight:700;}.hlr{color:#f87171;font-weight:700;}
+.hlb{color:#93c5fd;font-weight:700;}.hlp{color:#d8b4fe;font-weight:700;}.hlo{color:#fdba74;font-weight:700;}
+.step-flow{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,.65);border-radius:10px;border:1.5px solid var(--border);}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;color:#fff;margin-top:2px;}
+.step-body{font-size:.84rem;line-height:1.8;color:#333;}.step-body strong{color:var(--dark);}
+.insight{padding:12px 16px;border-radius:10px;font-size:.84rem;line-height:1.8;}
+.insight.warn{background:#fff5f4;border:1.5px solid var(--accent);color:#7a2d22;}
+.insight.good{background:#f0fff8;border:1.5px solid var(--accent3);color:#1a5a3a;}
+.insight.info{background:#eff6ff;border:1.5px solid var(--accent2);color:#1e3a6a;}
+.insight.gold{background:#fffbf0;border:1.5px solid var(--gold);color:#7a5000;}
+.insight.purple{background:#faf5ff;border:1.5px solid var(--accent4);color:#5b21b6;}
+.insight.teal{background:#f0fdff;border:1.5px solid #06b6d4;color:#0c4a6e;}
+.interactive{background:var(--dark);border-radius:16px;padding:22px;border:1px solid #1e2d50;margin-bottom:22px;}
+.int-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.28);margin-bottom:14px;}
+.int-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.int-tab{padding:6px 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.38);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap;}
+.int-tab:hover{background:rgba(255,255,255,.05);}
+.int-tab.on{border-color:var(--accent3);background:rgba(46,189,143,.12);color:#6ee7b7;}
+.canvas-wrap{background:#040810;border-radius:12px;overflow:hidden;border:1px solid #1a2540;display:flex;justify-content:center;}
+.ctrl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+.btn{padding:7px 18px;border-radius:8px;border:none;cursor:pointer;font-size:.78rem;font-weight:700;font-family:'DM Sans',sans-serif;transition:all .18s;}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.btn-green{background:var(--accent3);color:#051a0d;}.btn-blue{background:var(--accent2);color:#fff;}
+.btn-red{background:var(--accent);color:#fff;}.btn-gold{background:var(--gold);color:#000;}
+.btn-purple{background:var(--accent4);color:#fff;}.btn-teal{background:#0891b2;color:#fff;}
+.btn-ghost{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.12);}
+.sent-chip{padding:7px 16px;border-radius:10px;font-size:.8rem;font-weight:600;border:2px solid transparent;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;line-height:1.4;text-align:left;width:100%;}
+.sent-chip.sel{box-shadow:0 0 0 3px currentColor;}
+.math-panel{background:rgba(255,255,255,.04);border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08);}
+.mp-lbl{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;}
+.mp-row{font-family:'IBM Plex Mono',monospace;font-size:.76rem;line-height:2.1;color:rgba(255,255,255,.7);}
+.cosine-meter{height:20px;border-radius:10px;position:relative;overflow:visible;background:linear-gradient(90deg,#f87171 0%,#fbbf24 50%,#4ade80 100%);border:1px solid rgba(255,255,255,.1);}
+.cosine-needle{position:absolute;top:-9px;width:3px;height:38px;background:#fff;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,.7);transform:translateX(-50%);transition:left .4s cubic-bezier(.34,1.56,.64,1);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media(max-width:720px){.two-col,.three-col{grid-template-columns:1fr;}}
+.proof-tbl{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:.76rem;}
+.proof-tbl th{background:rgba(255,255,255,.06);color:rgba(255,255,255,.38);padding:8px 10px;text-align:left;font-size:.64rem;text-transform:uppercase;letter-spacing:.5px;}
+.proof-tbl td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.75);}
+.sep{border:none;border-top:2px solid var(--border);margin:40px 0;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeIn .35s ease forwards;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px;}
+.wm-badge{position:fixed;bottom:20px;right:22px;z-index:9999;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:30px;padding:8px 16px 8px 10px;box-shadow:0 4px 18px rgba(0,0,0,.12);animation:wmPulse 3s ease-in-out infinite;}
+@keyframes wmPulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.12)}50%{box-shadow:0 6px 24px rgba(46,189,143,.3)}}
+.wm-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent4));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+.wm-txt{display:flex;flex-direction:column;gap:1px;}
+.wm-by{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.wm-name{font-size:13px;font-weight:800;color:var(--dark);letter-spacing:-.2px;}
+.wm-diag{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.wm-diag::after{content:'Created by Yogita Patil';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-size:clamp(22px,4vw,50px);font-weight:800;color:rgba(46,189,143,.04);white-space:nowrap;letter-spacing:5px;text-transform:uppercase;pointer-events:none;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HERO -->
+<div style="margin-bottom:36px;">
+  <div class="section-eyebrow">Core NLP Metric - Full Deep Dive</div>
+  <div class="section-title">Cosine Similarity and Cosine Distance<br><span style="color:var(--accent3);">From First Principles to Real Sentences</span></div>
+  <div class="section-body">Cosine similarity answers one question: how similar is the <em>direction</em> of two vectors, ignoring their size? It is the most widely used similarity metric in NLP - used in search engines, recommendation systems, document clustering, and word embeddings. This explainer builds up every part of the formula from scratch, proves it with real sentence vectors, and lets you interact with every step.</div>
+</div>
+
+<!-- PART 1 - INTUITION -->
+<div class="section-eyebrow">Part 1 - The Core Intuition</div>
+<div class="section-title" style="font-size:1.3rem;">Why Angle, Not Distance?</div>
+<div class="two-col" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="card-title">The Key Idea - Direction Over Magnitude</div>
+    <p style="font-size:.87rem;line-height:1.85;color:#444;margin-bottom:12px;">Imagine two documents: one has the word "cat" 10 times, the other has "cat" 5 times. Are they saying different things? Not necessarily - the second might just be shorter. Euclidean distance would call them different; cosine similarity would call them identical, because they point in the <strong>same direction</strong>.</p>
+    <div class="insight info"><strong>Cosine similarity measures the angle between two vectors.</strong> Two vectors pointing in exactly the same direction have cosine similarity = 1, regardless of how long they are.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">The Angle Controls Everything</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="text-align:center;padding:12px 8px;background:rgba(74,222,128,.08);border:1.5px solid rgba(74,222,128,.3);border-radius:10px;">
+        <div style="font-size:1.4rem;font-weight:800;color:#4ade80;font-family:'Space Mono',monospace;">1.0</div>
+        <div style="font-size:.72rem;color:#1a5a3a;margin-top:4px;font-weight:700;">θ = 0°</div>
+        <div style="font-size:.68rem;color:#555;margin-top:2px;">Identical direction</div>
+      </div>
+      <div style="text-align:center;padding:12px 8px;background:rgba(251,191,36,.08);border:1.5px solid rgba(251,191,36,.3);border-radius:10px;">
+        <div style="font-size:1.4rem;font-weight:800;color:#fbbf24;font-family:'Space Mono',monospace;">0.0</div>
+        <div style="font-size:.72rem;color:#7a5000;margin-top:4px;font-weight:700;">θ = 90°</div>
+        <div style="font-size:.68rem;color:#555;margin-top:2px;">Orthogonal</div>
+      </div>
+      <div style="text-align:center;padding:12px 8px;background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.3);border-radius:10px;">
+        <div style="font-size:1.4rem;font-weight:800;color:#f87171;font-family:'Space Mono',monospace;">-1.0</div>
+        <div style="font-size:.72rem;color:#7a2d22;margin-top:4px;font-weight:700;">θ = 180°</div>
+        <div style="font-size:.68rem;color:#555;margin-top:2px;">Opposite direction</div>
+      </div>
+    </div>
+    <div class="insight good"><strong>For NLP with count vectors:</strong> cosine similarity lives in [0, 1] because word counts are non-negative. The range [-1, 0] only appears with signed vectors like word embeddings.</div>
+  </div>
+</div>
+
+<!-- PART 2 - FORMULA UNPACKED -->
+<hr class="sep">
+<div class="section-eyebrow">Part 2 - The Formula, Fully Unpacked</div>
+<div class="section-title" style="font-size:1.3rem;">cos(θ) = (a · b) / (‖a‖ × ‖b‖) — Every Piece Explained</div>
+<div class="card">
+  <div class="card-title">The Master Formula</div>
+  <div class="formula-block green">
+    <div class="f-lbl">Cosine Similarity - full form</div>
+    <div class="formula">cos_sim(<span class="hlb">a</span>, <span class="hlo">b</span>) = <span class="hl">a · b</span> / (<span class="hlg">‖a‖ × ‖b‖</span>) = <span class="hl">Σᵢ aᵢbᵢ</span> / (<span class="hlg">√Σaᵢ²</span> × <span class="hlg">√Σbᵢ²</span>)</div>
+    <div class="formula-caption">θ is the angle between vectors a and b in n-dimensional space</div>
+  </div>
+  <div class="step-flow">
+    <div class="step-row"><div class="step-num" style="background:var(--accent2);">1</div>
+      <div class="step-body"><strong>Numerator - Dot Product (a dot b):</strong> Multiply each pair of matching elements, then sum them all. a·b = a₀b₀ + a₁b₁ + ··· + aₙbₙ = Σᵢ aᵢbᵢ. This captures how much the two vectors "agree" in each dimension.</div></div>
+    <div class="step-row"><div class="step-num" style="background:var(--accent3);">2</div>
+      <div class="step-body"><strong>Denominator - Product of Magnitudes (||a|| x ||b||):</strong> ‖a‖ = √(a₀² + a₁² + ··· + aₙ²) is the Euclidean length of vector a. Dividing by both magnitudes <strong>removes length effects</strong> — making the result depend only on the angle between vectors, not how long they are. A document with 1000 words and one with 100 words about the same topic will score identically.</div></div>
+    <div class="step-row"><div class="step-num" style="background:var(--accent4);">3</div>
+      <div class="step-body"><strong>Why this equals cos(θ):</strong> From the law of cosines in linear algebra, for any two vectors: a·b = ‖a‖·‖b‖·cos(θ). Rearranging: cos(θ) = (a·b)/(‖a‖·‖b‖). So the formula IS the cosine of the angle.</div></div>
+    <div class="step-row"><div class="step-num" style="background:var(--accent);">4</div>
+      <div class="step-body"><strong>Why it ranges from -1 to +1:</strong> cos(0) = 1, cos(90) = 0, cos(180) = -1. The angle between any two vectors is between 0° and 180°, so cos(θ) is always in [−1, 1]. For non-negative vectors (word counts): [0, 1].</div></div>
+  </div>
+</div>
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Dot Product - The Numerator</div>
+    <div class="formula-block blue">
+      <div class="f-lbl">a · b = Σᵢ aᵢ × bᵢ</div>
+      <div class="formula sm"><span class="hlb">a</span> = [<span class="hlb">2, 1, 3</span>] &nbsp;&nbsp; <span class="hlo">b</span> = [<span class="hlo">1, 2, 1</span>]<br><span class="hlb">a</span>·<span class="hlo">b</span> = (2×1)+(1×2)+(3×1) = 2+2+3 = <span class="hl">7</span></div>
+    </div>
+    <p style="font-size:.82rem;line-height:1.8;color:#444;">The dot product is large when both vectors have <strong>large values in the same dimensions</strong>. It is zero when they share no active dimensions.</p><div class="insight info" style="margin-top:10px;font-size:.82rem;"><strong>Geometric interpretation:</strong> The dot product equals the <em>magnitude of one vector multiplied by the projection of the other onto it</em>: a·b = ‖a‖ × ‖b‖ × cos(θ). This is exactly why dividing by ‖a‖‖b‖ isolates cos(θ) — and why it connects directly to projection, attention mechanisms in transformers, and similarity ranking.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Magnitude - The Denominator</div>
+    <div class="formula-block green">
+      <div class="f-lbl">‖a‖ = √(Σᵢ aᵢ²)</div>
+      <div class="formula sm">‖<span class="hlb">a</span>‖ = √(4+1+9) = √14 = <span class="hlg">3.742</span><br>‖<span class="hlo">b</span>‖ = √(1+4+1) = √6 = <span class="hlg">2.449</span><br>cos_sim = <span class="hl">7</span> / (3.742 × 2.449) = <span class="hlg">0.764</span></div>
+    </div>
+    <p style="font-size:.82rem;line-height:1.8;color:#444;">The magnitude normalises for length. Without it, a document with 1000 words would always score higher than one with 10 words, even if they are about the same topic.</p>
+  </div>
+</div>
+
+<!-- ZERO VECTOR WARNING -->
+<div class="insight warn" style="margin-bottom:20px;">
+  <strong>⚠ Edge Case — Zero Vector: Cosine Similarity is Undefined</strong><br>
+  If either vector is the zero vector (all elements = 0), its magnitude ‖v‖ = 0. Since the formula divides by both magnitudes, this causes division by zero — making cosine similarity <strong>mathematically undefined</strong> in that case.<br>
+  <span style="font-family:'IBM Plex Mono',monospace;font-size:.83rem;display:block;margin-top:8px;">If ‖a‖ = 0 or ‖b‖ = 0  →  cos_sim(a, b) is UNDEFINED</span>
+  <span style="font-size:.81rem;display:block;margin-top:6px;">In practice: always check that neither vector is all-zero before computing cosine similarity. Libraries like scikit-learn handle this by returning 0 for zero vectors, but this is a convention — not mathematical truth.</span>
+</div>
+
+<!-- PART 3 - SENTENCE VECTORS -->
+<hr class="sep">
+<div class="section-eyebrow">Part 3 - Real Sentence Vectors</div>
+<div class="section-title" style="font-size:1.3rem;">Building Vectors From Sentences - Step by Step</div>
+<div class="section-body">We will use four real sentences. First we build a <strong>shared vocabulary</strong>, then represent each sentence as a <strong>Bag-of-Words count vector</strong>. This is exactly how early NLP systems worked.</div>
+<div class="card">
+  <div class="card-title">The Four Sentences</div>
+  <div style="display:grid;gap:10px;" id="sentenceDisplay"></div>
+</div>
+<div class="card">
+  <div class="card-title">Shared Vocabulary (14 words) - alphabetically sorted</div>
+  <div id="vocabDisplay"></div>
+  <div class="insight info" style="margin-top:14px;"><strong>How BoW works:</strong> For each sentence, count how many times each vocabulary word appears. The result is a 14-dimensional vector. Sentences that use the same words get similar vectors.</div>
+</div>
+<div class="card">
+  <div class="card-title">Bag-of-Words Vectors - Sentences as Numbers</div>
+  <div id="bowDisplay"></div>
+</div>
+
+<!-- PART 4 - WORKED EXAMPLE -->
+<hr class="sep">
+<div class="section-eyebrow">Part 4 - Fully Worked Calculation</div>
+<div class="section-title" style="font-size:1.3rem;">cos_sim(S1, S2) - Every Arithmetic Step Shown</div>
+<div class="card" id="workedExample"></div>
+
+<!-- PART 5 - LIVE CALCULATOR -->
+<hr class="sep">
+<div class="section-eyebrow">Part 5 - Live Interactive Calculator</div>
+<div class="section-title" style="font-size:1.3rem;">Pick Any Two Sentences - Full Cosine Calculation Live</div>
+<div class="interactive">
+  <div class="int-title">Select Sentence A and Sentence B - every step computed and displayed instantly</div>
+  <div class="two-col" style="margin-bottom:16px;">
+    <div>
+      <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.28);margin-bottom:7px;">Sentence A</div>
+      <div id="sentAChips" style="display:flex;flex-direction:column;gap:7px;"></div>
+    </div>
+    <div>
+      <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.28);margin-bottom:7px;">Sentence B</div>
+      <div id="sentBChips" style="display:flex;flex-direction:column;gap:7px;"></div>
+    </div>
+  </div>
+  <div style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.28);margin-bottom:6px;">
+      <span>-1.0 (opposite)</span><span>0.0 (orthogonal)</span><span>+1.0 (identical)</span>
+    </div>
+    <div style="position:relative;padding-bottom:10px;">
+      <div class="cosine-meter"><div class="cosine-needle" id="cosNeedle"></div></div>
+    </div>
+  </div>
+  <div id="liveCalcArea" class="fade-in"></div>
+</div>
+
+<!-- PART 6 - COSINE DISTANCE -->
+<hr class="sep">
+<div class="section-eyebrow">Part 6 - Cosine Distance</div>
+<div class="section-title" style="font-size:1.3rem;">From Similarity to Distance - d = 1 - cos_sim</div>
+<div class="two-col" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="card-title">Cosine Distance Formula</div>
+    <div class="formula-block red">
+      <div class="f-lbl">Cosine Distance</div>
+      <div class="formula">d_cos(a, b) = 1 − cos_sim(a, b)</div>
+      <div class="formula" style="margin-top:6px;font-size:.85rem;">= 1 − <span class="hl">a·b</span> / (<span class="hlg">‖a‖ × ‖b‖</span>)</div>
+      <div class="formula-caption">Range: [0, 2] for signed vectors; [0, 1] for count vectors</div>
+    </div>
+    <div class="step-flow">
+      <div class="step-row"><div class="step-num" style="background:var(--accent3);">1</div><div class="step-body"><strong>Identical vectors:</strong> cos_sim = 1, distance = 1-1 = <strong>0</strong>. Zero apart.</div></div>
+      <div class="step-row"><div class="step-num" style="background:var(--gold);">2</div><div class="step-body"><strong>Orthogonal vectors:</strong> cos_sim = 0, distance = 1-0 = <strong>1</strong>. Maximally different for count vectors.</div></div>
+      <div class="step-row"><div class="step-num" style="background:var(--accent);">3</div><div class="step-body"><strong>Opposite vectors (embeddings only):</strong> cos_sim = -1, distance = 1-(-1) = <strong>2</strong>. Most distant possible.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Similarity vs Distance - Key Differences</div>
+    <div style="overflow-x:auto;">
+      <table style="border-collapse:collapse;font-size:.8rem;width:100%;">
+        <tr style="background:var(--card);">
+          <th style="padding:8px 10px;text-align:left;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;"></th>
+          <th style="padding:8px 10px;text-align:center;font-size:.7rem;color:var(--accent3);text-transform:uppercase;letter-spacing:.5px;">Similarity</th>
+          <th style="padding:8px 10px;text-align:center;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;">Distance</th>
+        </tr>
+        <tr><td style="padding:8px 10px;color:var(--muted);font-size:.76rem;">Formula</td><td style="padding:8px 10px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.74rem;">(a·b)/(‖a‖·‖b‖)</td><td style="padding:8px 10px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.74rem;">1 - sim(a,b)</td></tr>
+        <tr style="background:var(--card);"><td style="padding:8px 10px;color:var(--muted);font-size:.76rem;">Identical vectors</td><td style="padding:8px 10px;text-align:center;font-weight:700;color:#1a8a4a;">1.0</td><td style="padding:8px 10px;text-align:center;font-weight:700;color:#1a8a4a;">0.0</td></tr>
+        <tr><td style="padding:8px 10px;color:var(--muted);font-size:.76rem;">Orthogonal</td><td style="padding:8px 10px;text-align:center;font-weight:700;color:#8a6a00;">0.0</td><td style="padding:8px 10px;text-align:center;font-weight:700;color:#8a6a00;">1.0</td></tr>
+        <tr style="background:var(--card);"><td style="padding:8px 10px;color:var(--muted);font-size:.76rem;">Opposite (embeddings)</td><td style="padding:8px 10px;text-align:center;font-weight:700;color:#8a2020;">-1.0</td><td style="padding:8px 10px;text-align:center;font-weight:700;color:#8a2020;">2.0</td></tr>
+        <tr><td style="padding:8px 10px;color:var(--muted);font-size:.76rem;">Higher value means</td><td style="padding:8px 10px;text-align:center;font-size:.76rem;">More similar</td><td style="padding:8px 10px;text-align:center;font-size:.76rem;">Less similar</td></tr>
+        <tr style="background:var(--card);"><td style="padding:8px 10px;color:var(--muted);font-size:.76rem;">Used for</td><td style="padding:8px 10px;text-align:center;font-size:.76rem;">Retrieval, ranking</td><td style="padding:8px 10px;text-align:center;font-size:.76rem;">Clustering, kNN</td></tr>
+      </table>
+    </div>
+    <div class="insight warn" style="margin-top:12px;"><strong>Caution:</strong> Cosine distance d = 1-cos_sim does NOT satisfy the triangle inequality strictly, so it is not a true metric. But it is widely used anyway in NLP tasks.</div>
+  </div>
+</div>
+
+<!-- PART 7 - 2D ANGLE CANVAS -->
+<hr class="sep">
+<div class="section-eyebrow">Part 7 - Geometric Animation</div>
+<div class="section-title" style="font-size:1.3rem;">See the Angle - Drag Vectors, Watch Cosine Change Live</div>
+<div class="interactive">
+  <div class="int-title">Drag the tip of vector b (orange) - watch angle θ and cos(θ) update in real time</div>
+  <div style="display:grid;grid-template-columns:1fr 310px;gap:16px;align-items:start;">
+    <div>
+      <div class="canvas-wrap">
+        <canvas id="angleCanvas" width="500" height="420" style="max-width:100%;cursor:crosshair;"></canvas>
+      </div>
+      <div class="ctrl-row">
+        <button class="btn btn-green"  onclick="snapAngle(0)">θ = 0° (sim=1)</button>
+        <button class="btn btn-gold"   onclick="snapAngle(90)">θ = 90° (sim=0)</button>
+        <button class="btn btn-red"    onclick="snapAngle(180)">θ = 180° (sim=−1)</button>
+        <button class="btn btn-teal"   onclick="snapAngle(45)">θ = 45°</button>
+        <button class="btn btn-ghost"  onclick="snapAngle(60)">θ = 60°</button>
+      </div>
+    </div>
+    <div id="angleLivePanel"></div>
+  </div>
+</div>
+
+<!-- PART 8 - RANGE EXPLORER -->
+<hr class="sep">
+<div class="section-eyebrow">Part 8 - Range Explorer</div>
+<div class="section-title" style="font-size:1.3rem;">What Every Cosine Value Means - [-1, 0, +1]</div>
+<div class="interactive">
+  <div class="int-title">Click any range zone to see its meaning and a real sentence-pair example</div>
+  <div style="padding:0 10px;margin-bottom:20px;">
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.3);margin-bottom:6px;">
+      <span>-1.0</span><span>-0.5</span><span>0.0</span><span>+0.5</span><span>+1.0</span>
+    </div>
+    <div style="display:flex;height:36px;border-radius:18px;overflow:hidden;cursor:pointer;gap:1px;" id="rangeZones"></div>
+    <div style="display:flex;justify-content:space-between;font-size:.64rem;color:rgba(255,255,255,.3);margin-top:6px;">
+      <span>Opposite</span><span>Very different</span><span>Unrelated</span><span>Similar</span><span>Identical</span>
+    </div>
+  </div>
+  <div id="rangeExplain"></div>
+</div>
+
+<!-- PART 9 - COSINE VS EUCLIDEAN -->
+<hr class="sep">
+<div class="section-eyebrow">Part 9 - Cosine vs Euclidean</div>
+<div class="section-title" style="font-size:1.3rem;">Why Cosine Wins in NLP - The Length Invariance Proof</div>
+<div class="insight info" style="margin-bottom:16px;font-size:.86rem;"><strong>Key distinction:</strong> Euclidean distance depends on both magnitude and direction — two vectors far apart in space score poorly even if they point the same way. Cosine similarity depends <em>only on direction</em> — two vectors pointing the same way score 1.0 regardless of their length. This is why cosine is preferred in NLP where document length varies.</div>
+<div class="interactive">
+  <div class="int-title">Three documents - two are about cats, one about dogs. Which metric finds the right pairs?</div>
+  <div id="vsCompareArea"></div>
+  <div class="canvas-wrap" style="margin-top:14px;">
+    <canvas id="vsCanvas" width="700" height="260" style="max-width:100%;"></canvas>
+  </div>
+</div>
+
+
+<!-- PART 9b - STEP BY STEP WORKED EXAMPLE (Image 3 style) -->
+<hr class="sep">
+<div class="section-eyebrow">Part 9b — Step-by-Step Visual Calculation</div>
+<div class="section-title" style="font-size:1.3rem;">Cat vs Dog vs Apple — Full Walkthrough Like a Textbook</div>
+<div class="section-body">Using simple 2D vectors (as in real NLP systems, just projected), we calculate cosine similarity step by step — exactly as shown in reference diagrams. Cat=[48,12], Dog=[50,10], Apple=[10,50].</div>
+
+<div class="card" style="border-top:4px solid var(--accent3);">
+  <div class="card-title">🐱🐶 Example 1: cos_sim(Dog, Cat) — Similar vectors</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#60a5fa;margin-bottom:6px;">Dog vector A = [50, 10]</div>
+      <div style="display:flex;gap:3px;">
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(96,165,250,.4);border:2px solid #60a5fa;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#60a5fa;">50</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₀</div></div>
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(96,165,250,.15);border:2px solid rgba(96,165,250,.4);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#60a5fa;">10</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₁</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fb923c;margin-bottom:6px;">Cat vector B = [48, 12]</div>
+      <div style="display:flex;gap:3px;">
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(251,146,60,.4);border:2px solid #fb923c;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#fb923c;">48</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₀</div></div>
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(251,146,60,.15);border:2px solid rgba(251,146,60,.4);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#fb923c;">12</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₁</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="step-flow">
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent2);">1</div>
+      <div class="step-body"><strong>Dot Product: A · B = Σᵢ Aᵢ × Bᵢ</strong><br>
+        = (<span style="color:#60a5fa;font-weight:700;">50</span> × <span style="color:#fb923c;font-weight:700;">48</span>) + (<span style="color:#60a5fa;font-weight:700;">10</span> × <span style="color:#fb923c;font-weight:700;">12</span>)
+        = <span style="color:#fde047;">2400</span> + <span style="color:#fde047;">120</span> = <strong style="color:#fde047;font-size:1rem;">2520</strong>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent3);">2</div>
+      <div class="step-body"><strong>Magnitude of A: ‖A‖ = √(Σᵢ Aᵢ²)</strong><br>
+        = √(50² + 10²) = √(2500 + 100) = √2600 ≈ <strong style="color:#4ade80;">51.0</strong>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent3);">3</div>
+      <div class="step-body"><strong>Magnitude of B: ‖B‖ = √(Σᵢ Bᵢ²)</strong><br>
+        = √(48² + 12²) = √(2304 + 144) = √2448 ≈ <strong style="color:#4ade80;">49.5</strong>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent4);">4</div>
+      <div class="step-body"><strong>Cosine Similarity = Dot Product / (‖A‖ × ‖B‖)</strong><br>
+        = <span style="color:#fde047;">2520</span> / (<span style="color:#4ade80;">51.0</span> × <span style="color:#4ade80;">49.5</span>) = 2520 / 2522.5 ≈ <strong style="color:#4ade80;font-size:1.1rem;">0.9989</strong>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent);">5</div>
+      <div class="step-body"><strong>Angle θ = arccos(0.9989)</strong><br>
+        = <strong style="color:#4ade80;">2.73°</strong> — vectors are extremely close in direction!
+        Cosine distance = 1 − 0.9989 = <span style="color:#f87171;">0.0011</span> (almost zero — very similar)
+      </div>
+    </div>
+  </div>
+  <div class="insight good" style="margin-top:14px;"><strong>Dog [50,10] and Cat [48,12] are very similar</strong> — both large on dim₀, small on dim₁. They point in almost the same direction (θ = 2.73°). cos_sim = 0.9989 confirms near-identical direction.</div>
+</div>
+
+<div class="card" style="border-top:4px solid var(--accent);">
+  <div class="card-title">🍎🐶 Example 2: cos_sim(Apple, Dog) — Dissimilar vectors</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fbbf24;margin-bottom:6px;">Apple vector A = [10, 50]</div>
+      <div style="display:flex;gap:3px;">
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(251,191,36,.15);border:2px solid rgba(251,191,36,.4);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#fbbf24;">10</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₀</div></div>
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(251,191,36,.4);border:2px solid #fbbf24;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#fbbf24;">50</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₁</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#60a5fa;margin-bottom:6px;">Dog vector B = [50, 10]</div>
+      <div style="display:flex;gap:3px;">
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(96,165,250,.4);border:2px solid #60a5fa;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#60a5fa;">50</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₀</div></div>
+        <div style="text-align:center;"><div style="width:52px;height:44px;border-radius:6px;background:rgba(96,165,250,.15);border:2px solid rgba(96,165,250,.4);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:1rem;font-weight:800;color:#60a5fa;">10</div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">dim₁</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="step-flow">
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent2);">1</div>
+      <div class="step-body"><strong>Dot Product: A · B = Σᵢ Aᵢ × Bᵢ</strong><br>
+        = (<span style="color:#fbbf24;font-weight:700;">10</span> × <span style="color:#60a5fa;font-weight:700;">50</span>) + (<span style="color:#fbbf24;font-weight:700;">50</span> × <span style="color:#60a5fa;font-weight:700;">10</span>)
+        = <span style="color:#fde047;">500</span> + <span style="color:#fde047;">500</span> = <strong style="color:#fde047;font-size:1rem;">1000</strong>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent3);">2</div>
+      <div class="step-body"><strong>Magnitude of A: ‖A‖ = √(10² + 50²) = √(100 + 2500) = √2600 ≈ <span style="color:#4ade80;">51.0</span></strong></div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent3);">3</div>
+      <div class="step-body"><strong>Magnitude of B: ‖B‖ = √(50² + 10²) = √(2500 + 100) = √2600 ≈ <span style="color:#4ade80;">51.0</span></strong></div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent4);">4</div>
+      <div class="step-body"><strong>Cosine Similarity = 1000 / (51.0 × 51.0) = 1000 / 2601 ≈ <span style="color:#f87171;font-size:1.1rem;">0.3846</span></strong></div>
+    </div>
+    <div class="step-row">
+      <div class="step-num" style="background:var(--accent);">5</div>
+      <div class="step-body"><strong>Angle θ = arccos(0.3846) ≈ <span style="color:#f87171;">67.4°</span></strong> — large angle, very different directions!<br>
+        Cosine distance = 1 − 0.3846 = <span style="color:#f87171;">0.6154</span> (high — dissimilar)
+      </div>
+    </div>
+  </div>
+  <div class="insight warn"><strong>Apple [10,50] and Dog [50,10] are NOT similar</strong> — Apple is large on dim₁ and small on dim₀, Dog is the exact opposite. They point in very different directions (θ = 67.4°). cos_sim = 0.385 confirms dissimilarity.</div>
+</div>
+
+<!-- PART 9c - VECTOR PROXIMITY: HOW CLOSE = HOW SIMILAR (Image 2 style) -->
+<hr class="sep">
+<div class="section-eyebrow">Part 9c — Vector Proximity = Semantic Similarity</div>
+<div class="section-title" style="font-size:1.3rem;">Close Vectors = Similar Meaning — King, Queen, Man, Woman</div>
+<div class="section-body">This is the geometric heart of word embeddings. Vectors that are semantically related <em>point in similar directions</em>. The angle between them is small, so their cosine is high. Vectors for unrelated words point in different directions — large angle, low cosine.</div>
+
+<div class="interactive">
+  <div class="int-title">Interactive: Click any two words to see their angle and cosine — observe how close vectors = similar meaning</div>
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start;">
+    <div>
+      <div class="canvas-wrap">
+        <canvas id="proxCanvas" width="480" height="400" style="max-width:100%;cursor:pointer;"></canvas>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;" id="proxChips"></div>
+    </div>
+    <div id="proxPanel"></div>
+  </div>
+</div>
+
+
+<!-- PART 10 - WORD EMBEDDING DEMO -->
+<hr class="sep">
+<div class="section-eyebrow">Part 10 - Word Embeddings + Cosine</div>
+<div class="section-title" style="font-size:1.3rem;">Cosine Similarity on Learned Vectors - Semantic Clusters</div>
+<div class="insight good" style="margin-bottom:16px;font-size:.86rem;"><strong>Industry context:</strong> Modern embedding models — including BERT, Sentence-BERT (SBERT), and OpenAI's text-embedding models — are explicitly trained so that cosine similarity between their output vectors reflects semantic similarity. Vectors for semantically close sentences are trained to point in similar directions, making cosine the natural and intended similarity measure for these models.</div>
+<div class="interactive">
+  <div class="int-title">Learned embedding vectors - cosine similarity reveals semantic structure</div>
+  <div class="int-tabs" id="embTabs">
+    <button class="int-tab on" onclick="embTab('matrix',this)">Similarity Matrix</button>
+    <button class="int-tab" onclick="embTab('pairs',this)">Word Pairs</button>
+    <button class="int-tab" onclick="embTab('analogy',this)">Analogy via Cosine</button>
+  </div>
+  <div id="embContent"></div>
+</div>
+
+<!-- PART 11 - SUMMARY -->
+<hr class="sep">
+<div class="section-eyebrow">Part 11 - Summary</div>
+<div class="section-title" style="font-size:1.3rem;">Everything You Need to Remember</div>
+<div class="card" style="border-top:4px solid var(--accent3);margin-bottom:20px;">
+  <div class="card-title">Complete Formula Reference</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="formula-block green" style="margin:0;"><div class="f-lbl">Cosine Similarity</div><div class="formula sm">cos_sim(a,b) = <span class="hl">a·b</span> / (<span class="hlg">‖a‖·‖b‖</span>)</div><div class="formula-caption">Range: [-1, +1] signed; [0, 1] count vectors</div></div>
+    <div class="formula-block red" style="margin:0;"><div class="f-lbl">Cosine Distance</div><div class="formula sm">cos_dist(a,b) = 1 − cos_sim(a,b)</div><div class="formula-caption">Range: [0, 2] signed; [0, 1] count vectors</div></div>
+    <div class="formula-block blue" style="margin:0;"><div class="f-lbl">Dot Product (numerator)</div><div class="formula sm">a·b = <span class="hl">Σᵢ (aᵢ × bᵢ)</span></div><div class="formula-caption">Sum of element-wise products</div></div>
+    <div class="formula-block purple" style="margin:0;"><div class="f-lbl">Magnitude (denominator)</div><div class="formula sm">‖a‖ = <span class="hlg">√(Σᵢ aᵢ²)</span></div><div class="formula-caption">L2 norm - Euclidean length</div></div>
+  </div>
+</div>
+<div class="three-col" style="margin-bottom:28px;">
+  <div class="card" style="border-top:3px solid var(--accent3);"><div style="font-size:1.6rem;margin-bottom:10px;">&#128208;</div><div style="font-weight:800;font-size:.95rem;color:var(--dark);margin-bottom:8px;">Angle, Not Length</div><p style="font-size:.83rem;line-height:1.8;color:#555;">Cosine similarity only cares about the <strong>direction</strong> a vector points, never how long it is. Two documents about cats score 1.0 even if one is 10x longer.</p></div>
+  <div class="card" style="border-top:3px solid var(--accent2);"><div style="font-size:1.6rem;margin-bottom:10px;">&#128290;</div><div style="font-weight:800;font-size:.95rem;color:var(--dark);margin-bottom:8px;">Three Steps Always</div><p style="font-size:.83rem;line-height:1.8;color:#555;">(1) Compute dot product a.b, (2) compute ||a|| and ||b||, (3) divide. That is the entire algorithm. The formula is simple - the insight is deep.</p></div>
+  <div class="card" style="border-top:3px solid var(--accent4);"><div style="font-size:1.6rem;margin-bottom:10px;">&#129504;</div><div style="font-weight:800;font-size:.95rem;color:var(--dark);margin-bottom:8px;">Works at Any Dimension</div><p style="font-size:.83rem;line-height:1.8;color:#555;">Whether your vectors are 14-dimensional (BoW) or 300-dimensional (Word2Vec), the formula and the geometric meaning are identical.</p></div>
+</div>
+<div class="insight teal" style="font-size:.88rem;line-height:1.9;"><strong>Core Insight:</strong> Cosine similarity solves the length normalisation problem that plagues Euclidean distance in NLP. Dividing by both magnitudes means the result depends <em>only on the angle</em> between vectors, not their length — mathematically equivalent to computing the dot product of their unit vectors. This is why <strong>cosine similarity is widely used in NLP</strong>, especially for semantic search, embedding comparison, and retrieval tasks where direction matters more than magnitude.</div>
+
+</div>
+<script>
+const SENTENCES=[{id:'S1',text:'The cat sat on the mat',col:'#60a5fa'},{id:'S2',text:'The cat sat on the hat',col:'#fb923c'},{id:'S3',text:'The dog ran in the park',col:'#4ade80'},{id:'S4',text:'Machine learning is great',col:'#d8b4fe'}];
+const VOCAB14=['cat','dog','great','hat','in','is','learning','machine','mat','on','park','ran','sat','the'];
+const BOW={S1:[1,0,0,0,0,0,0,0,1,1,0,0,1,2],S2:[1,0,0,1,0,0,0,0,0,1,0,0,1,2],S3:[0,1,0,0,1,0,0,0,0,0,1,1,0,2],S4:[0,0,1,0,0,1,1,1,0,0,0,0,0,0]};
+function dot(a,b){if(!a||!b)return 0;return a.reduce((s,v,i)=>s+v*(b[i]||0),0);}
+function norm(a){if(!a||!a.length)return 0;return Math.sqrt(a.reduce((s,v)=>s+v*v,0));}
+function cosineSim(a,b){if(!a||!b)return 0;const n=norm(a)*norm(b);return n?dot(a,b)/n:0;}
+const WORDS=['cat','dog','kitten','lion','Paris','France','king','queen','man','woman'];
+const WCOLORS={cat:'#fb923c',dog:'#fbbf24',kitten:'#f87171',lion:'#c084fc',Paris:'#60a5fa',France:'#34d399',king:'#e879f9',queen:'#f472b6',man:'#a78bfa',woman:'#818cf8'};
+const wc=w=>WCOLORS[w]||'#94a3b8';
+const EMB={cat:[0.72,-0.38,0.15],dog:[0.68,-0.35,0.12],kitten:[0.70,-0.40,0.18],lion:[0.58,-0.28,0.08],Paris:[0.12,0.80,0.58],France:[0.10,0.82,0.62],king:[0.42,0.22,-0.68],queen:[0.38,0.25,-0.65],man:[0.40,0.18,-0.72],woman:[0.36,0.21,-0.69]};
+function embCos(wa,wb){return cosineSim(EMB[wa],EMB[wb]);}
+
+function buildSentenceDisplay(){
+  document.getElementById('sentenceDisplay').innerHTML=SENTENCES.map(s=>{
+    const tokens=s.text.toLowerCase().split(' ');
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:${s.col}12;border:1.5px solid ${s.col}44;">
+      <div style="font-weight:800;font-size:.85rem;color:${s.col};min-width:28px;">${s.id}</div>
+      <div style="font-size:.9rem;color:var(--ink);flex:1;">"${s.text}"</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">${tokens.map(t=>`<span style="padding:2px 8px;border-radius:10px;font-size:.68rem;font-family:'IBM Plex Mono',monospace;font-weight:700;background:${s.col}22;color:${s.col};">${t}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildVocabDisplay(){
+  document.getElementById('vocabDisplay').innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">${VOCAB14.map((w,i)=>`<span style="padding:4px 12px;border-radius:20px;background:var(--card);border:1.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:700;color:var(--ink);"><span style="color:var(--muted);font-size:.62rem;">[${i}]</span> ${w}</span>`).join('')}</div>`;
+}
+
+function buildBOWDisplay(){
+  const el=document.getElementById('bowDisplay');
+  el.innerHTML=`<div style="overflow-x:auto;"><table style="border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:.72rem;width:100%;min-width:700px;">
+  <tr style="background:var(--card);">
+    <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.5px;min-width:80px;">Sentence</th>
+    ${VOCAB14.map(w=>`<th style="padding:7px 6px;text-align:center;color:var(--muted);font-size:.62rem;writing-mode:vertical-lr;height:50px;vertical-align:bottom;">${w}</th>`).join('')}
+    <th style="padding:7px 10px;text-align:center;color:var(--muted);font-size:.66rem;text-transform:uppercase;">||v||</th>
+  </tr>
+  ${SENTENCES.map(s=>{const v=BOW[s.id],n=norm(v);return`<tr><td style="padding:7px 10px;font-weight:700;color:${s.col};">${s.id}</td>${v.map(val=>`<td style="padding:7px 6px;text-align:center;background:${val>0?s.col+'25':'transparent'};color:${val>0?s.col:'rgba(0,0,0,.2)'};">${val}</td>`).join('')}<td style="padding:7px 10px;text-align:center;color:var(--accent3);font-weight:700;">${n.toFixed(3)}</td></tr>`;}).join('')}
+  </table></div>
+  <div class="insight good" style="margin-top:12px;"><strong>Pattern:</strong> S1 and S2 share "cat","sat","on","the" - similar vectors. S3 (dog) and S4 (machine learning) share almost no vocabulary with S1/S2.</div>`;
+}
+
+function buildWorkedExample(){
+  const a=BOW.S1,b=BOW.S2;
+  const dp=dot(a,b),na=norm(a),nb=norm(b),cs=dp/(na*nb);
+  const products=a.map((v,i)=>v*b[i]);
+  const nonZero=products.map((v,i)=>({v,w:VOCAB14[i]})).filter(x=>x.v>0);
+  document.getElementById('workedExample').innerHTML=`
+  <div class="card-title">Full Calculation: cos_sim(S1, S2)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+    <div><div style="font-size:.65rem;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S1: "The cat sat on the mat"</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink);background:var(--card);padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);">[${a.join(', ')}]</div></div>
+    <div><div style="font-size:.65rem;font-weight:700;color:#fb923c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S2: "The cat sat on the hat"</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink);background:var(--card);padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);">[${b.join(', ')}]</div></div>
+  </div>
+  <div class="formula-block blue" style="margin-bottom:12px;">
+    <div class="f-lbl">Step 1 - Dot Product: a.b = Sum(ai x bi)</div>
+    <div class="formula sm">${a.map((v,i)=>{const p=v*b[i];return`<span style="color:${p>0?'#fde047':'rgba(255,255,255,.2)'};">(${v}x${b[i]})</span>`;}).join(' + ')}<br>= ${products.map(p=>`<span style="color:${p>0?'#4ade80':'rgba(255,255,255,.2)'};">${p}</span>`).join(' + ')}<br>= <span class="hl" style="font-size:1.1rem;">${dp}</span></div>
+    <div class="formula-caption">Only ${nonZero.length} positions contribute (both non-zero): ${nonZero.map(x=>'"'+x.w+'" ('+x.v+')').join(', ')}</div>
+  </div>
+  <div class="formula-block green" style="margin-bottom:12px;">
+    <div class="f-lbl">Step 2 - Magnitudes: ||S1|| and ||S2||</div>
+    <div class="formula sm">||S1|| = sqrt(${a.map(v=>v+'^2').join('+')}) = sqrt(${a.reduce((s,v)=>s+v*v,0)}) = <span class="hlg">${na.toFixed(5)}</span><br>||S2|| = sqrt(${b.map(v=>v+'^2').join('+')}) = sqrt(${b.reduce((s,v)=>s+v*v,0)}) = <span class="hlg">${nb.toFixed(5)}</span><br>||S1|| x ||S2|| = ${na.toFixed(4)} x ${nb.toFixed(4)} = <span class="hlg">${(na*nb).toFixed(5)}</span></div>
+  </div>
+  <div class="formula-block purple" style="margin-bottom:12px;">
+    <div class="f-lbl">Step 3 - Divide: cos_sim = dot_product / (||S1|| x ||S2||)</div>
+    <div class="formula">cos_sim(S1,S2) = <span class="hl">${dp}</span> / <span class="hlg">${(na*nb).toFixed(4)}</span> = <span class="hlg" style="font-size:1.25rem;">${cs.toFixed(6)}</span></div>
+    <div class="formula-caption">Cosine distance = 1 - ${cs.toFixed(4)} = <span style="color:#f87171;">${(1-cs).toFixed(6)}</span></div>
+  </div>
+  <div class="insight good"><strong>Interpretation:</strong> cos_sim(S1,S2) = ${cs.toFixed(3)} - very high similarity! S1 and S2 share "the"x2, "cat", "sat", "on". They differ only in the last word ("mat" vs "hat"). The high cosine confirms they are about very similar topics.</div>`;
+}
+
+let sentA='S1',sentB='S2';
+function renderSentChips(){
+  ['A','B'].forEach(side=>{
+    const sel=side==='A'?sentA:sentB;
+    document.getElementById('sent'+side+'Chips').innerHTML=SENTENCES.map(s=>`<button class="sent-chip ${s.id===sel?'sel':''}" data-id="${s.id}" data-side="${side}" style="background:${s.col}12;border-color:${s.col}44;color:${s.id===sel?s.col:s.col+'99'};"><strong>${s.id}:</strong> "${s.text}"</button>`).join('');
+  });
+  document.querySelectorAll('.sent-chip[data-id]').forEach(b=>{
+    b.addEventListener('click',()=>{if(b.dataset.side==='A')sentA=b.dataset.id;else sentB=b.dataset.id;renderSentChips();renderLiveCalc();});
+  });
+}
+
+function renderLiveCalc(){
+  const a=BOW[sentA],b=BOW[sentB];
+  const sa=SENTENCES.find(s=>s.id===sentA),sb=SENTENCES.find(s=>s.id===sentB);
+  const dp=dot(a,b),na=norm(a),nb=norm(b);
+  const cs=na&&nb?dp/(na*nb):1,cd=1-cs;
+  const products=a.map((v,i)=>v*b[i]);
+  const nonZero=products.map((v,i)=>({v,w:VOCAB14[i]})).filter(x=>x.v>0);
+  const same=sentA===sentB;
+  const pct=((cs+1)/2*100).toFixed(1);
+  document.getElementById('cosNeedle').style.left=pct+'%';
+  const el=document.getElementById('liveCalcArea');
+  el.className='fade-in';
+  el.innerHTML=`
+  <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+    <div style="padding:8px 16px;border-radius:10px;background:${sa.col}15;border:1.5px solid ${sa.col}44;font-size:.82rem;font-weight:700;color:${sa.col};">A: "${sa.text}"</div>
+    <div style="padding:8px 16px;border-radius:10px;background:${sb.col}15;border:1.5px solid ${sb.col}44;font-size:.82rem;font-weight:700;color:${sb.col};">B: "${sb.text}"</div>
+  </div>
+  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;margin-bottom:12px;border:1px solid rgba(255,255,255,.08);">
+    <div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.25);margin-bottom:8px;">Shared words (contribute to dot product)</div>
+    ${nonZero.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;">${nonZero.map(x=>`<span style="padding:3px 10px;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:700;background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3);">"${x.w}" = ${x.v}</span>`).join('')}</div>`:'<span style="color:rgba(255,255,255,.3);font-size:.8rem;">No shared vocabulary words</span>'}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+    <div style="background:#040810;border-radius:9px;padding:11px;border:1px solid rgba(96,165,250,.25);">
+      <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;color:#60a5fa;margin-bottom:6px;letter-spacing:.5px;">Step 1: Dot Product</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.8;">Sum(ai x bi) = <span style="color:#fde047;font-weight:700;font-size:.9rem;">${dp}</span></div>
+    </div>
+    <div style="background:#040810;border-radius:9px;padding:11px;border:1px solid rgba(46,189,143,.25);">
+      <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;color:#4ade80;margin-bottom:6px;letter-spacing:.5px;">Step 2: Magnitudes</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.8;">||A||=${na.toFixed(3)}, ||B||=${nb.toFixed(3)}<br>product=<span style="color:#4ade80;font-weight:700;">${(na*nb).toFixed(3)}</span></div>
+    </div>
+    <div style="background:#040810;border-radius:9px;padding:11px;border:1px solid rgba(216,180,254,.25);">
+      <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;color:#d8b4fe;margin-bottom:6px;letter-spacing:.5px;">Step 3: Result</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.8;">sim=<span style="color:#d8b4fe;font-weight:700;font-size:.9rem;">${cs.toFixed(4)}</span><br>dist=<span style="color:#f87171;font-weight:700;">${cd.toFixed(4)}</span></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:10px;background:${cs>0.8?'rgba(74,222,128,.08)':cs>0.3?'rgba(251,191,36,.06)':'rgba(248,113,113,.06)'};border:1.5px solid ${cs>0.8?'rgba(74,222,128,.3)':cs>0.3?'rgba(251,191,36,.3)':'rgba(248,113,113,.3)'};">
+    <div style="font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700;color:${cs>0.8?'#4ade80':cs>0.3?'#fbbf24':'#f87171'};">${cs.toFixed(4)}</div>
+    <div>
+      <div style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:3px;">${same?'Same sentence - cosine = 1.000':cs>0.8?'Very high similarity - same topic':cs>0.5?'Moderate similarity - some shared vocab':cs>0.1?'Low similarity - very different content':'Near zero - no shared vocabulary (orthogonal)'}</div>
+      <div style="font-size:.73rem;color:rgba(255,255,255,.4);">Distance = <span style="font-family:'IBM Plex Mono',monospace;">${cd.toFixed(4)}</span> | Angle = <span style="font-family:'IBM Plex Mono',monospace;">${(Math.acos(Math.min(1,Math.max(-1,cs)))*180/Math.PI).toFixed(1)}deg</span></div>
+    </div>
+  </div>`;
+}
+
+// ANGLE CANVAS
+const ac=document.getElementById('angleCanvas');
+const actx=ac.getContext('2d');
+const AW=ac.width,AH=ac.height,AOX=AW/2,AOY=AH/2+20,ASC=150;
+let vecB_angle=60,draggingAngle=false;
+function deg2rad(d){return d*Math.PI/180;}
+
+function drawAngleCanvas(){
+  actx.fillStyle='#040810';actx.fillRect(0,0,AW,AH);
+  actx.strokeStyle='rgba(255,255,255,.04)';actx.lineWidth=1;
+  for(let x=0;x<AW;x+=40){actx.beginPath();actx.moveTo(x,0);actx.lineTo(x,AH);actx.stroke();}
+  for(let y=0;y<AH;y+=40){actx.beginPath();actx.moveTo(0,y);actx.lineTo(AW,y);actx.stroke();}
+  actx.strokeStyle='rgba(255,255,255,.12)';actx.lineWidth=1.5;
+  actx.beginPath();actx.moveTo(20,AOY);actx.lineTo(AW-20,AOY);actx.stroke();
+  actx.beginPath();actx.moveTo(AOX,30);actx.lineTo(AOX,AH-20);actx.stroke();
+  
+  const cs_val=Math.cos(deg2rad(vecB_angle));
+  const bx=AOX+ASC*Math.cos(deg2rad(vecB_angle));
+  const by=AOY-ASC*Math.sin(deg2rad(vecB_angle));
+  const ax=AOX+ASC,ay=AOY;
+
+  // Unit circle
+  actx.strokeStyle='rgba(255,255,255,.06)';actx.lineWidth=1;actx.setLineDash([3,5]);
+  actx.beginPath();actx.arc(AOX,AOY,ASC,0,Math.PI*2);actx.stroke();
+  actx.setLineDash([]);
+
+  // Angle arc
+  const aA=0,aB=-deg2rad(vecB_angle);
+  const startA=Math.min(aA,aB),endA=Math.max(aA,aB);
+  const arcCol=cs_val>0.5?'#4ade80':cs_val>0?'#fbbf24':cs_val>-0.5?'#fb923c':'#f87171';
+  actx.strokeStyle=arcCol;actx.lineWidth=2;
+  actx.beginPath();actx.arc(AOX,AOY,50,-endA,-startA);actx.stroke();
+  const midA=-(startA+endA)/2;
+  actx.fillStyle=arcCol;actx.font='bold 13px Space Mono';actx.textAlign='center';
+  actx.fillText(vecB_angle.toFixed(0)+'°',AOX+Math.cos(midA)*70,AOY+Math.sin(midA)*70);
+
+  // Right angle marker at 90
+  if(Math.abs(vecB_angle-90)<2){
+    actx.strokeStyle='rgba(74,222,128,.4)';actx.lineWidth=1.5;actx.setLineDash([2,3]);
+    actx.strokeRect(AOX,AOY-18,18,18);actx.setLineDash([]);
+  }
+
+  // Projection line
+  const projLen=ASC*Math.cos(deg2rad(vecB_angle));
+  if(Math.abs(vecB_angle-90)>3){
+    const ppx=AOX+projLen,ppy=AOY;
+    actx.strokeStyle='rgba(255,200,100,.25)';actx.lineWidth=1.2;actx.setLineDash([4,5]);
+    actx.beginPath();actx.moveTo(bx,by);actx.lineTo(ppx,ppy);actx.stroke();actx.setLineDash([]);
+    actx.fillStyle='rgba(255,200,100,.4)';actx.beginPath();actx.arc(ppx,ppy,3,0,Math.PI*2);actx.fill();
+    actx.fillStyle='rgba(255,200,100,.35)';actx.font='9px IBM Plex Mono';actx.textAlign='center';
+    actx.fillText('proj',ppx,ppy+14);
+  }
+
+  // cos(θ) visualisation line along a-axisxis
+  if(Math.abs(cs_val)>0.05){
+    actx.strokeStyle=arcCol+'66';actx.lineWidth=8;
+    actx.beginPath();actx.moveTo(AOX,AOY);actx.lineTo(AOX+cs_val*ASC,AOY);actx.stroke();
+    actx.fillStyle=arcCol;actx.font='bold 10px IBM Plex Mono';actx.textAlign='center';
+    actx.fillText('cos='+cs_val.toFixed(2),AOX+cs_val*ASC/2,AOY+24);
+  }
+
+  function drawVec(tipX,tipY,col,label,offX,offY){
+    const dx=tipX-AOX,dy=tipY-AOY,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len,hw=9,hl=16;
+    const axe=tipX-ux*hl,aye=tipY-uy*hl;
+    actx.strokeStyle=col;actx.lineWidth=3;actx.shadowBlur=10;actx.shadowColor=col;
+    actx.beginPath();actx.moveTo(AOX,AOY);actx.lineTo(axe,aye);actx.stroke();actx.shadowBlur=0;
+    actx.fillStyle=col;actx.beginPath();
+    actx.moveTo(tipX,tipY);actx.lineTo(axe-uy*hw,aye+ux*hw);actx.lineTo(axe+uy*hw,aye-ux*hw);
+    actx.closePath();actx.fill();
+    actx.font='bold 13px DM Sans';actx.textAlign='center';actx.fillText(label,tipX+offX,tipY+offY);
+  }
+  drawVec(ax,ay,'#60a5fa','a',20,4);
+  drawVec(bx,by,'#fb923c',by>AOY?'b (drag)':'b (drag)',-10,by>AOY?18:-14);
+  actx.fillStyle='rgba(255,255,255,.6)';actx.beginPath();actx.arc(AOX,AOY,5,0,Math.PI*2);actx.fill();
+
+  updateAnglePanel(cs_val);
+}
+
+function updateAnglePanel(cs_val){
+  const deg=vecB_angle,cd=1-cs_val;
+  document.getElementById('angleLivePanel').innerHTML=`
+  <div class="math-panel">
+    <div class="mp-lbl">Live Cosine Calculation</div>
+    <div class="mp-row" style="font-size:.74rem;color:rgba(255,255,255,.65);line-height:2.1;">
+      θ = <span style="color:#fde047;font-weight:700;">${deg.toFixed(1)}°</span><br>
+      cos(θ) = cos(${deg.toFixed(1)}°)<br>
+      &nbsp;&nbsp;&nbsp; = <span style="color:${cs_val>0?'#4ade80':cs_val<0?'#f87171':'#fbbf24'};font-weight:700;font-size:1.15rem;">${cs_val.toFixed(6)}</span><br>
+      distance = 1 - ${cs_val.toFixed(4)}<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span style="color:#f87171;font-weight:700;">${cd.toFixed(6)}</span>
+    </div>
+  </div>
+  <div style="margin-top:10px;" class="math-panel">
+    <div class="mp-lbl">Formula Applied</div>
+    <div class="mp-row" style="font-size:.72rem;color:rgba(255,255,255,.55);line-height:2;">
+      a·b = ‖a‖·‖b‖·cos(θ)<br>
+      &nbsp;&nbsp;&nbsp; = 1×1×cos(${deg.toFixed(1)}°)<br>
+      &nbsp;&nbsp;&nbsp; = <span style="color:#4ade80;font-weight:700;">${cs_val.toFixed(4)}</span><br><br>
+      cos_sim = (a·b)/(‖a‖·‖b‖)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${cs_val.toFixed(4)} / (1x1)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span style="color:#4ade80;font-weight:700;">${cs_val.toFixed(4)}</span>
+    </div>
+  </div>
+  <div style="margin-top:10px;padding:10px 12px;border-radius:9px;text-align:center;background:${cs_val>0.7?'rgba(74,222,128,.1)':cs_val>0.3?'rgba(251,191,36,.08)':'rgba(248,113,113,.08)'};border:1.5px solid ${cs_val>0.7?'rgba(74,222,128,.3)':cs_val>0.3?'rgba(251,191,36,.3)':'rgba(248,113,113,.3)'};color:${cs_val>0.7?'#4ade80':cs_val>0.3?'#fbbf24':'#f87171'};font-size:.8rem;font-weight:700;">
+    ${cs_val>0.95?'Identical direction':cs_val>0.7?'Very similar':cs_val>0.3?'Somewhat similar':cs_val>0.05?'Low similarity':cs_val>-0.05?'Orthogonal (unrelated)':cs_val>-0.7?'Somewhat opposite':'Nearly opposite directions'}
+  </div>`;
+}
+
+ac.addEventListener('mousedown',e=>{const r=ac.getBoundingClientRect(),sx=ac.width/r.width;const px=(e.clientX-r.left)*sx,py=(e.clientY-r.top)*sx;const bx=AOX+ASC*Math.cos(deg2rad(vecB_angle)),by=AOY-ASC*Math.sin(deg2rad(vecB_angle));if(Math.hypot(px-bx,py-by)<24)draggingAngle=true;});
+ac.addEventListener('mousemove',e=>{if(!draggingAngle)return;const r=ac.getBoundingClientRect(),sx=ac.width/r.width;const px=(e.clientX-r.left)*sx,py=(e.clientY-r.top)*sx;let angle=-Math.atan2(py-AOY,px-AOX)*180/Math.PI;angle=((angle%360)+360)%360;if(angle>180)angle=360-angle;vecB_angle=Math.round(angle*2)/2;drawAngleCanvas();});
+ac.addEventListener('mouseup',()=>draggingAngle=false);
+ac.addEventListener('mouseleave',()=>draggingAngle=false);
+ac.addEventListener('touchstart',e=>{e.preventDefault();const r=ac.getBoundingClientRect(),sx=ac.width/r.width;const t=e.touches[0],px=(t.clientX-r.left)*sx,py=(t.clientY-r.top)*sx;const bx=AOX+ASC*Math.cos(deg2rad(vecB_angle)),by=AOY-ASC*Math.sin(deg2rad(vecB_angle));if(Math.hypot(px-bx,py-by)<30)draggingAngle=true;},{passive:false});
+ac.addEventListener('touchmove',e=>{if(!draggingAngle)return;e.preventDefault();const r=ac.getBoundingClientRect(),sx=ac.width/r.width;const t=e.touches[0],px=(t.clientX-r.left)*sx,py=(t.clientY-r.top)*sx;let angle=-Math.atan2(py-AOY,px-AOX)*180/Math.PI;angle=((angle%360)+360)%360;if(angle>180)angle=360-angle;vecB_angle=Math.round(angle*2)/2;drawAngleCanvas();},{passive:false});
+ac.addEventListener('touchend',()=>draggingAngle=false);
+function snapAngle(deg){vecB_angle=deg;drawAngleCanvas();}
+
+// RANGE EXPLORER
+const RANGE_ZONES=[
+  {label:'Opposite',range:'[-1, -0.7]',col:'#f87171',note:'Very different directions. In NLP with count vectors this is impossible (counts are non-negative). With signed embeddings, antonyms can score here.',angle:'135°–180°'},
+  {label:'Very different',range:'(-0.7, -0.2]',col:'#fb923c',note:'Significant dissimilarity. The vectors point in broadly opposite directions. Common with embeddings for semantically distant concepts.',angle:'102°–135°'},
+  {label:'Unrelated',range:'(-0.2, 0.2]',col:'#fbbf24',note:'Near-orthogonal. Very little shared direction. For BoW sentence vectors this means near-zero shared vocabulary. cos=0 means the angle=90°.',angle:'78°–102°'},
+  {label:'Somewhat similar',range:'(0.2, 0.7]',col:'#86efac',note:'Partial overlap in topics or vocabulary. In document retrieval, scores in this range are soft matches - potentially relevant but not definitive.',angle:'46°–78°'},
+  {label:'Very similar',range:'(0.7, 0.95]',col:'#4ade80',note:'Strong directional agreement. Documents that discuss the same topic with similar word distributions. High confidence in retrieval systems.',angle:'18°–46°'},
+  {label:'Nearly identical',range:'(0.95, 1.0]',col:'#34d399',note:'Essentially the same direction. Could be the same document, very close paraphrases, or semantically near-synonymous words in embedding space.',angle:'0°–18°'},
+];
+let activeZone=3;
+function buildRangeZones(){
+  document.getElementById('rangeZones').innerHTML=RANGE_ZONES.map((z,i)=>`<div style="flex:1;background:${z.col}${i===activeZone?'dd':'66'};cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;border:${i===activeZone?'2px solid #fff':'2px solid transparent'};border-radius:${i===0?'18px 0 0 18px':i===RANGE_ZONES.length-1?'0 18px 18px 0':'0'};" onclick="selectZone(${i})" title="${z.label}"><span style="font-size:.58rem;font-weight:800;color:rgba(0,0,0,.6);transform:rotate(-90deg);white-space:nowrap;font-family:'DM Sans',sans-serif;">${z.label}</span></div>`).join('');
+  renderRangeExplain();
+}
+function selectZone(i){activeZone=i;buildRangeZones();}
+function renderRangeExplain(){
+  const z=RANGE_ZONES[activeZone];
+  document.getElementById('rangeExplain').innerHTML=`<div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;" class="fade-in">
+    <div style="background:#040810;border-radius:10px;padding:14px;border:1.5px solid ${z.col}55;">
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${z.col};margin-bottom:8px;">${z.label}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:${z.col};margin-bottom:6px;">${z.range}</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);">θ range: ${z.angle}</div>
+    </div>
+    <div style="background:#040810;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08);">
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.28);margin-bottom:8px;">What this means</div>
+      <div style="font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.8;">${z.note}</div>
+    </div>
+  </div>`;
+}
+
+// COSINE VS EUCLIDEAN
+function buildVsCompare(){
+  const docs=[
+    {name:'DocA',label:'DocA (short cats)',v:[3,1],col:'#60a5fa',note:'Short cat doc'},
+    {name:'DocB',label:'DocB (long cats)', v:[9,3],col:'#93c5fd',note:'Long cat doc (3x)'},
+    {name:'DocC',label:'DocC (dogs)',       v:[1,4],col:'#4ade80',note:'Dog doc'}
+  ];
+  const n2=v=>Math.sqrt(v[0]*v[0]+v[1]*v[1]);
+  const d2=(a,b)=>a[0]*b[0]+a[1]*b[1];
+  const cos2=(a,b)=>d2(a,b)/(n2(a)*n2(b));
+  const euc2=(a,b)=>Math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2);
+  const pairs=[['DocA','DocB'],['DocA','DocC'],['DocB','DocC']];
+  const dm={DocA:docs[0],DocB:docs[1],DocC:docs[2]};
+  document.getElementById('vsCompareArea').innerHTML=`
+  <div style="margin-bottom:12px;font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.8;">
+    <strong style="color:#fde047;">Key test:</strong> DocA = short cat doc <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;">[3,1]</code>, 
+    DocB = long cat doc <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;">[9,3]</code> (same direction, 3× longer), 
+    DocC = dog doc <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;">[1,4]</code>.
+    Which metric correctly groups the two cat docs?
+  </div>
+  <div style="overflow-x:auto;margin-bottom:14px;">
+    <table class="proof-tbl">
+      <tr><th>Pair</th><th>Euclidean Distance</th><th>Cosine Similarity</th><th>Which is correct?</th></tr>
+      ${pairs.map(([na,nb])=>{
+        const a=dm[na].v,b=dm[nb].v;
+        const ed=euc2(a,b),cs=cos2(a,b);
+        const isAB=na==='DocA'&&nb==='DocB';
+        return '<tr>' +
+          '<td><span style="color:'+dm[na].col+';font-weight:700;">'+na+'</span><span style="color:rgba(255,255,255,.3);"> vs </span><span style="color:'+dm[nb].col+';font-weight:700;">'+nb+'</span></td>' +
+          '<td style="text-align:center;"><span style="font-weight:700;color:'+(isAB?'#f87171':'#4ade80')+';">'+ed.toFixed(3)+'</span>'+(isAB?' <span style="color:#f87171;font-size:.65rem;"> says DIFFERENT!</span>':'')+' </td>' +
+          '<td style="text-align:center;"><span style="font-weight:700;color:'+(isAB?'#4ade80':'#fbbf24')+';">'+cs.toFixed(4)+'</span>'+(isAB?' <span style="color:#4ade80;font-size:.65rem;"> correctly says SAME!</span>':'')+' </td>' +
+          '<td style="font-size:.73rem;color:rgba(255,255,255,.6);">'+(isAB?'<span style="color:#4ade80;font-weight:700;">Cosine is correct</span> — Euclidean wrong, penalises length':'Both agree — DocC is different from cat docs')+'</td>' +
+          '</tr>';
+      }).join('')}
+    </table>
+  </div>
+  <div class="insight warn"><strong>DocA and DocB are about the same topic</strong> (both about cats, same vector direction, ratio 1:3). Euclidean distance = ${euc2(docs[0].v,docs[1].v).toFixed(2)} incorrectly says they are far apart because DocB is longer. Cosine = ${cos2(docs[0].v,docs[1].v).toFixed(3)} correctly identifies them as pointing in the identical direction — same topic.</div>`;
+
+  // Draw the canvas — bigger and cleaner
+  const vc=document.getElementById('vsCanvas');
+  const vctx=vc.getContext('2d');
+  const VW=vc.width,VH=vc.height;
+  const VOX=100, VOY=VH-45, VSC=22;
+  vctx.fillStyle='#040810'; vctx.fillRect(0,0,VW,VH);
+  // Grid
+  vctx.strokeStyle='rgba(255,255,255,.05)'; vctx.lineWidth=1;
+  for(let x=0;x<=VW/2;x+=30){vctx.beginPath();vctx.moveTo(x,0);vctx.lineTo(x,VH);vctx.stroke();}
+  for(let y=0;y<VH;y+=30){vctx.beginPath();vctx.moveTo(0,y);vctx.lineTo(VW/2,y);vctx.stroke();}
+  // Axes
+  vctx.strokeStyle='rgba(255,255,255,.25)'; vctx.lineWidth=2;
+  vctx.beginPath();vctx.moveTo(VOX-10,VOY);vctx.lineTo(VW/2-10,VOY);vctx.stroke();
+  vctx.beginPath();vctx.moveTo(VOX,VOY+10);vctx.lineTo(VOX,15);vctx.stroke();
+  // Axis labels
+  vctx.fillStyle='rgba(255,255,255,.35)';vctx.font='bold 10px DM Sans';
+  vctx.textAlign='center';vctx.fillText('dim₀ — cats axis',VOX+130,VOY-8);
+  vctx.save();vctx.translate(VOX-18,VH/2-20);vctx.rotate(-Math.PI/2);
+  vctx.fillText('dim₁ — dogs axis',0,0);vctx.restore();
+  // Origin label
+  vctx.fillStyle='rgba(255,255,255,.25)';vctx.font='9px IBM Plex Mono';vctx.textAlign='center';
+  vctx.fillText('[0,0]',VOX,VOY+16);
+  // Arrow helper
+  function drawVec2(tx,ty,col,label,sublabel,lx,ly){
+    const dx=tx-VOX,dy=ty-VOY;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    if(len<2)return;
+    const ux=dx/len,uy=dy/len,hw=8,hl=14;
+    const ax=tx-ux*hl,ay=ty-uy*hl;
+    vctx.strokeStyle=col;vctx.lineWidth=3;vctx.shadowBlur=10;vctx.shadowColor=col;
+    vctx.beginPath();vctx.moveTo(VOX,VOY);vctx.lineTo(ax,ay);vctx.stroke();
+    vctx.shadowBlur=0;
+    vctx.fillStyle=col;vctx.beginPath();
+    vctx.moveTo(tx,ty);vctx.lineTo(ax-uy*hw,ay+ux*hw);vctx.lineTo(ax+uy*hw,ay-ux*hw);
+    vctx.closePath();vctx.fill();
+    vctx.fillStyle=col;vctx.font='bold 12px DM Sans';vctx.textAlign='left';
+    vctx.fillText(label,lx,ly);
+    vctx.fillStyle=col+'80';vctx.font='10px DM Sans';
+    vctx.fillText(sublabel,lx,ly+14);
+  }
+  // Draw vectors
+  const pA={x:VOX+docs[0].v[0]*VSC, y:VOY-docs[0].v[1]*VSC};
+  const pB={x:VOX+docs[1].v[0]*VSC, y:VOY-docs[1].v[1]*VSC};
+  const pC={x:VOX+docs[2].v[0]*VSC, y:VOY-docs[2].v[1]*VSC};
+  drawVec2(pA.x,pA.y,'#60a5fa','DocA [3,1]','Short cat doc',pA.x+10,pA.y-5);
+  drawVec2(pB.x,pB.y,'#93c5fd','DocB [9,3]','Long cat doc (3× longer)',pB.x+10,pB.y-5);
+  drawVec2(pC.x,pC.y,'#4ade80','DocC [1,4]','Dog doc',pC.x+10,pC.y-18);
+  // Show same-direction line (angle bisector for A and B since they're same direction)
+  vctx.strokeStyle='rgba(147,197,253,.2)';vctx.lineWidth=1;vctx.setLineDash([4,5]);
+  vctx.beginPath();vctx.moveTo(VOX,VOY);vctx.lineTo(VOX+280,VOY-280/3);vctx.stroke();
+  vctx.setLineDash([]);
+  vctx.fillStyle='rgba(147,197,253,.35)';vctx.font='9px DM Sans';vctx.textAlign='center';
+  vctx.fillText('same direction →',VOX+140,VOY-37);
+  // Euclidean distance line A↔B
+  vctx.strokeStyle='rgba(248,113,113,.6)';vctx.lineWidth=2;vctx.setLineDash([5,4]);
+  vctx.beginPath();vctx.moveTo(pA.x,pA.y);vctx.lineTo(pB.x,pB.y);vctx.stroke();
+  vctx.setLineDash([]);
+  const emx=(pA.x+pB.x)/2+5,emy=(pA.y+pB.y)/2-12;
+  vctx.fillStyle='#f87171';vctx.font='bold 10px Space Mono';vctx.textAlign='center';
+  vctx.fillText('Euclidean='+euc2(docs[0].v,docs[1].v).toFixed(2),emx,emy);
+  vctx.fillStyle='rgba(248,113,113,.5)';vctx.font='9px DM Sans';
+  vctx.fillText('(says different!)',emx,emy+13);
+  // Origin dot
+  vctx.fillStyle='rgba(255,255,255,.6)';vctx.beginPath();vctx.arc(VOX,VOY,4,0,Math.PI*2);vctx.fill();
+
+  // Right panel — observations box
+  const rx=VW/2+16, rw=VW/2-24;
+  // Title
+  vctx.fillStyle='rgba(255,255,255,.5)';vctx.font='bold 12px DM Sans';vctx.textAlign='left';
+  vctx.fillText('Why cosine wins here:',rx,26);
+  // Observation rows
+  const obs=[
+    {col:'#60a5fa', lines:['DocA = [3,1]  ‖v‖ = '+n2(docs[0].v).toFixed(2)]},
+    {col:'#93c5fd', lines:['DocB = [9,3]  ‖v‖ = '+n2(docs[1].v).toFixed(2)]},
+    {col:'rgba(255,255,255,.3)', lines:['Ratio [3,1]:[9,3] = 1:3 — parallel!']},
+    {col:'#4ade80', lines:['cos_sim(A,B) = '+cos2(docs[0].v,docs[1].v).toFixed(4)+' ✓  SAME direction']},
+    {col:'#f87171', lines:['euclidean(A,B) = '+euc2(docs[0].v,docs[1].v).toFixed(3)+' ✗  Says DIFFERENT']},
+    {col:'rgba(255,255,255,.2)', lines:['']},
+    {col:'#4ade80', lines:['DocC = [1,4] — different direction']},
+    {col:'rgba(255,255,255,.4)', lines:['Both metrics agree DocC ≠ cat docs']},
+    {col:'rgba(255,255,255,.2)', lines:['']},
+    {col:'#fde047', lines:['RULE: Scale vector by any k > 0']},
+    {col:'#fde047', lines:['→ cosine unchanged, euclidean grows']},
+  ];
+  let yy=46;
+  obs.forEach(o=>{
+    o.lines.forEach(line=>{
+      if(!line){yy+=8;return;}
+      vctx.fillStyle=o.col;
+      vctx.font=o.col==='#fde047'?'bold 10px DM Sans':'10px DM Sans';
+      vctx.textAlign='left';
+      vctx.fillText(line,rx,yy);
+      yy+=16;
+    });
+  });
+}
+
+
+// EMBEDDING TAB
+let curEmbTab='matrix';
+function embTab(mode,btn){curEmbTab=mode;document.querySelectorAll('#embTabs .int-tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderEmbContent();
+buildProxChips();
+drawProxCanvas();}
+function renderEmbContent(){
+  const el=document.getElementById('embContent');
+  if(curEmbTab==='matrix'){
+    const ws=WORDS;
+    el.innerHTML=`<div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:10px;">Cosine similarity between 10 word embedding vectors. Green=similar, Red=dissimilar.</div><div style="overflow-x:auto;"><table style="border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:.64rem;"><tr><td style="padding:4px 8px;"></td>${ws.map(w=>`<td style="padding:4px 6px;text-align:center;color:${wc(w)};font-size:.6rem;writing-mode:vertical-lr;height:44px;vertical-align:bottom;font-weight:700;">${w}</td>`).join('')}</tr>${ws.map(wa=>`<tr><td style="padding:4px 8px;color:${wc(wa)};font-weight:700;white-space:nowrap;">${wa}</td>${ws.map(wb=>{const sim=embCos(wa,wb);const same=wa===wb;const col=same?'rgba(255,255,255,.08)':sim>0.98?'rgba(74,222,128,.9)':sim>0.85?'rgba(74,222,128,.6)':sim>0.5?'rgba(74,222,128,.3)':sim>0?'rgba(251,191,36,.2)':'rgba(248,113,113,.3)';return`<td style="padding:3px 5px;text-align:center;"><div style="width:36px;height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center;background:${col};color:rgba(255,255,255,.85);font-size:.58rem;">${sim.toFixed(2)}</div></td>`;}).join('')}</tr>`).join('')}</table></div><div class="insight good" style="margin-top:10px;"><strong>Clusters visible:</strong> cat/dog/kitten/lion form a high-similarity cluster. Paris/France cluster. king/queen/man/woman cluster. Cross-cluster cosines are low.</div>`;
+  } else if(curEmbTab==='pairs'){
+    const pairs=[['cat','kitten','Near-synonyms - both are small felines'],['cat','dog','Related - both common pets'],['cat','lion','Related - both felines'],['king','queen','Related - royalty, different gender'],['Paris','France','Strongly related - city and country'],['cat','Paris','Unrelated - animal vs city'],['king','man','Related - both male, different roles'],['cat','machine','Unrelated - animal vs technology']];
+    el.innerHTML=`<div style="display:flex;flex-direction:column;gap:8px;">${pairs.map(([wa,wb,note])=>{const sim=embCos(wa,wb);const barW=Math.max(4,sim*100);return`<div style="display:grid;grid-template-columns:90px 90px 1fr 120px;gap:10px;align-items:center;padding:9px 12px;border-radius:9px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);"><span style="color:${wc(wa)};font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:.75rem;">${wa}</span><span style="color:${wc(wb)};font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:.75rem;">${wb}</span><div><div style="height:10px;background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;"><div style="height:100%;width:${barW}%;border-radius:5px;background:${sim>0.9?'#4ade80':sim>0.7?'#86efac':sim>0.4?'#fbbf24':'#f87171'};"></div></div><div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;">${note}</div></div><div style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:700;color:${sim>0.9?'#4ade80':sim>0.7?'#86efac':sim>0.4?'#fbbf24':'#f87171'};">${sim.toFixed(4)}</div></div>`;}).join('')}</div>`;
+  } else {
+    const king=EMB.king,man=EMB.man,woman=EMB.woman;
+    const result=king.map((v,i)=>v-man[i]+woman[i]);
+    const n3=(v)=>Math.sqrt(v.reduce((s,x)=>s+x*x,0));
+    const c3=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0)/(n3(a)*n3(b));
+    const sims=WORDS.map(w=>({w,sim:c3(result,EMB[w])})).sort((a,b)=>b.sim-a.sim);
+    el.innerHTML=`<div style="margin-bottom:14px;"><div style="font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.9;margin-bottom:10px;">The famous word analogy: <strong style="color:#fde047;">"king" minus "man" plus "woman" = ?</strong><br>We subtract the "man" direction from "king", add the "woman" direction, then find the word with highest cosine similarity to the result.</div><div class="formula-block purple" style="margin-bottom:12px;"><div class="f-lbl">Vector Arithmetic + Cosine Similarity</div><div class="formula sm">result = v(king) - v(man) + v(woman)<br>= [${king.map((v,i)=>(v-man[i]+woman[i]).toFixed(3)).join(', ')}]<br><br>find w* = argmax cosine_sim(result, v(w))<br>w* = <span class="hlg" style="font-size:1.1rem;">"${sims[0].w}"</span></div><div class="formula-caption">Ranked by cosine similarity to result vector</div></div><div style="display:flex;flex-direction:column;gap:6px;">${sims.map((x,i)=>`<div style="display:grid;grid-template-columns:80px 1fr 80px;gap:8px;align-items:center;padding:6px 10px;border-radius:7px;background:${i===0?'rgba(74,222,128,.1)':'rgba(255,255,255,.03)'};border:1px solid ${i===0?'rgba(74,222,128,.3)':'rgba(255,255,255,.05)'};">
+      <span style="color:${wc(x.w)};font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:.76rem;">${i===0?'TOP: ':''+(i+1)+'. '}${x.w}</span>
+      <div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${Math.max(0,x.sim)*100}%;border-radius:4px;background:${i===0?'#4ade80':wc(x.w)+'88'};"></div></div>
+      <span style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:${i===0?'#4ade80':wc(x.w)};font-weight:${i===0?700:400};">${x.sim.toFixed(4)}</span>
+    </div>`).join('')}</div></div>`;
+  }
+}
+
+
+// ═══════════════════════════════════════════════
+// PART 9c — VECTOR PROXIMITY CANVAS
+// Using Image 2 vectors: King=[0.5,0.7] Queen=[0.3,0.9] Man=[0.5,0.2] Woman=[0.3,0.4]
+// ═══════════════════════════════════════════════
+const PROX_WORDS = [
+  {name:'King',  v:[0.5,0.7], col:'#e879f9', group:'royalty'},
+  {name:'Queen', v:[0.3,0.9], col:'#f472b6', group:'royalty'},
+  {name:'Man',   v:[0.5,0.2], col:'#a78bfa', group:'gender'},
+  {name:'Woman', v:[0.3,0.4], col:'#818cf8', group:'gender'},
+];
+let proxSelA=0, proxSelB=1;
+
+function proxCos(ia,ib){
+  const a=PROX_WORDS[ia].v, b=PROX_WORDS[ib].v;
+  const dp=a[0]*b[0]+a[1]*b[1];
+  const na=Math.sqrt(a[0]*a[0]+a[1]*a[1]);
+  const nb=Math.sqrt(b[0]*b[0]+b[1]*b[1]);
+  return na&&nb?dp/(na*nb):0;
+}
+function proxAngle(ia,ib){ return Math.acos(Math.min(1,Math.max(-1,proxCos(ia,ib))))*180/Math.PI; }
+
+function drawProxCanvas(){
+  const cv=document.getElementById('proxCanvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  const OX=W/2-30, OY=H-50, SC=260;
+
+  ctx.fillStyle='#040810'; ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,.15)'; ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(OX-10,OY);ctx.lineTo(W-20,OY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(OX,OY+10);ctx.lineTo(OX,20);ctx.stroke();
+  // Axis arrow tips
+  ctx.fillStyle='rgba(255,255,255,.15)';
+  ctx.beginPath();ctx.moveTo(W-15,OY);ctx.lineTo(W-25,OY-5);ctx.lineTo(W-25,OY+5);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(OX,15);ctx.lineTo(OX-5,25);ctx.lineTo(OX+5,25);ctx.closePath();ctx.fill();
+  // Origin dot
+  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.beginPath();ctx.arc(OX,OY,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='10px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('[0, 0]',OX,OY+18);
+  // Unit circle arc (quarter)
+  ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=1; ctx.setLineDash([3,5]);
+  ctx.beginPath(); ctx.arc(OX,OY,SC,-Math.PI/2,0); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw angle arc between selected pair
+  const vA=PROX_WORDS[proxSelA].v, vB=PROX_WORDS[proxSelB].v;
+  const angA=Math.atan2(-vA[1],vA[0]);
+  const angB=Math.atan2(-vB[1],vB[0]);
+  const arcSt=Math.min(angA,angB), arcEn=Math.max(angA,angB);
+  const cs=proxCos(proxSelA,proxSelB);
+  const arcCol=cs>0.95?'#4ade80':cs>0.8?'#86efac':cs>0.6?'#fbbf24':'#f87171';
+  ctx.strokeStyle=arcCol+'88'; ctx.lineWidth=14; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(OX,OY,36,arcSt,arcEn); ctx.stroke();
+  // Angle label
+  const midAng=(arcSt+arcEn)/2;
+  ctx.fillStyle=arcCol; ctx.font='bold 11px Space Mono'; ctx.textAlign='center';
+  ctx.fillText(proxAngle(proxSelA,proxSelB).toFixed(1)+'°',OX+Math.cos(midAng)*58,OY+Math.sin(midAng)*58);
+
+  // Draw ALL vectors (faint) first
+  PROX_WORDS.forEach((pw,i)=>{
+    if(i===proxSelA||i===proxSelB)return;
+    const tx=OX+pw.v[0]*SC, ty=OY-pw.v[1]*SC;
+    const dx=tx-OX,dy=ty-OY,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len,hw=6,hl=11;
+    ctx.strokeStyle=pw.col+'44'; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(OX,OY);ctx.lineTo(tx-ux*hl,ty-uy*hl);ctx.stroke();
+    ctx.fillStyle=pw.col+'44';ctx.beginPath();
+    ctx.moveTo(tx,ty);ctx.lineTo(tx-ux*hl-uy*hw,ty-uy*hl+ux*hw);
+    ctx.lineTo(tx-ux*hl+uy*hw,ty-uy*hl-ux*hw);ctx.closePath();ctx.fill();
+    ctx.fillStyle=pw.col+'55'; ctx.font='10px DM Sans'; ctx.textAlign='left';
+    const lx=tx+8,ly=ty+(ty>OY?16:-6);
+    ctx.fillText(pw.name+' ['+pw.v+']',lx,ly);
+  });
+
+  // Draw selected vectors (bright)
+  [proxSelA,proxSelB].forEach((i,si)=>{
+    const pw=PROX_WORDS[i];
+    const tx=OX+pw.v[0]*SC, ty=OY-pw.v[1]*SC;
+    const dx=tx-OX,dy=ty-OY,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len,hw=9,hl=16;
+    const ax=tx-ux*hl,ay=ty-uy*hl;
+    ctx.strokeStyle=pw.col; ctx.lineWidth=3.5;
+    ctx.shadowBlur=14; ctx.shadowColor=pw.col;
+    ctx.beginPath();ctx.moveTo(OX,OY);ctx.lineTo(ax,ay);ctx.stroke();
+    ctx.shadowBlur=0;
+    ctx.fillStyle=pw.col;ctx.beginPath();
+    ctx.moveTo(tx,ty);ctx.lineTo(ax-uy*hw,ay+ux*hw);ctx.lineTo(ax+ux*(-1)*0+uy*hw*(-1)*-1,ay);
+    ctx.moveTo(tx,ty);ctx.lineTo(ax-uy*hw,ay+ux*hw);ctx.lineTo(ax+uy*hw,ay-ux*hw);
+    ctx.closePath();ctx.fill();
+    // Label with background box
+    const lx=tx+12, ly=ty-6;
+    const lbl=pw.name+' = ['+pw.v+']';
+    ctx.font='bold 12px DM Sans';
+    const tw=ctx.measureText(lbl).width;
+    ctx.fillStyle='rgba(4,8,16,.8)';
+    ctx.fillRect(lx-3,ly-14,tw+8,18);
+    ctx.fillStyle=pw.col;
+    ctx.textAlign='left';
+    ctx.fillText(lbl,lx,ly);
+    // norm label
+    const nm=Math.sqrt(pw.v[0]*pw.v[0]+pw.v[1]*pw.v[1]);
+    ctx.fillStyle=pw.col+'80'; ctx.font='9px IBM Plex Mono';
+    ctx.fillText('‖v‖='+nm.toFixed(3),lx,ly+12);
+  });
+
+  updateProxPanel();
+}
+
+function updateProxPanel(){
+  const ia=proxSelA, ib=proxSelB;
+  const wa=PROX_WORDS[ia], wb=PROX_WORDS[ib];
+  const a=wa.v, b=wb.v;
+  const dp=a[0]*b[0]+a[1]*b[1];
+  const na=Math.sqrt(a[0]*a[0]+a[1]*a[1]);
+  const nb=Math.sqrt(b[0]*b[0]+b[1]*b[1]);
+  const cs=dp/(na*nb);
+  const ang=Math.acos(Math.min(1,Math.max(-1,cs)))*180/Math.PI;
+  const cd=1-cs;
+  const arcCol=cs>0.95?'#4ade80':cs>0.8?'#86efac':cs>0.6?'#fbbf24':'#f87171';
+
+  document.getElementById('proxPanel').innerHTML=`
+  <div class="math-panel" style="margin-bottom:10px;">
+    <div class="mp-lbl">Selected Pair</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span style="color:${wa.col};font-weight:800;font-size:.9rem;">${wa.name}</span>
+      <span style="color:rgba(255,255,255,.3);">↔</span>
+      <span style="color:${wb.col};font-weight:800;font-size:.9rem;">${wb.name}</span>
+    </div>
+    <div class="mp-row" style="font-size:.72rem;color:rgba(255,255,255,.6);line-height:2.1;">
+      <span style="color:${wa.col};">a</span> = [${a[0]}, ${a[1]}]<br>
+      <span style="color:${wb.col};">b</span> = [${b[0]}, ${b[1]}]
+    </div>
+  </div>
+  <div class="math-panel" style="margin-bottom:10px;">
+    <div class="mp-lbl">Step-by-Step</div>
+    <div class="mp-row" style="font-size:.71rem;color:rgba(255,255,255,.6);line-height:2.2;">
+      <span style="color:rgba(255,255,255,.3);">Step 1 — dot product:</span><br>
+      a·b = ${a[0]}×${b[0]} + ${a[1]}×${b[1]}<br>
+      &nbsp;&nbsp; = ${a[0]*b[0]} + ${a[1]*b[1]} = <span style="color:#fde047;font-weight:700;">${dp.toFixed(4)}</span><br><br>
+      <span style="color:rgba(255,255,255,.3);">Step 2 — magnitudes:</span><br>
+      ‖a‖ = √(${a[0]}²+${a[1]}²) = <span style="color:#4ade80;font-weight:700;">${na.toFixed(4)}</span><br>
+      ‖b‖ = √(${b[0]}²+${b[1]}²) = <span style="color:#4ade80;font-weight:700;">${nb.toFixed(4)}</span><br><br>
+      <span style="color:rgba(255,255,255,.3);">Step 3 — divide:</span><br>
+      cos_sim = ${dp.toFixed(2)} / (${na.toFixed(3)}×${nb.toFixed(3)})<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${dp.toFixed(2)} / ${(na*nb).toFixed(3)}<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <span style="color:${arcCol};font-weight:700;font-size:1.1rem;">${cs.toFixed(4)}</span>
+    </div>
+  </div>
+  <div style="padding:12px;border-radius:9px;background:${cs>0.9?'rgba(74,222,128,.1)':cs>0.7?'rgba(134,239,172,.08)':cs>0.5?'rgba(251,191,36,.08)':'rgba(248,113,113,.08)'};border:1.5px solid ${arcCol}44;text-align:center;">
+    <div style="font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:${arcCol};">${cs.toFixed(4)}</div>
+    <div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:3px;">θ = ${ang.toFixed(1)}° &nbsp;|&nbsp; dist = ${cd.toFixed(4)}</div>
+    <div style="font-size:.78rem;font-weight:700;color:${arcCol};margin-top:6px;">
+      ${cs>0.99?'Essentially identical!':cs>0.95?'Extremely similar':cs>0.85?'Very similar':cs>0.7?'Similar':cs>0.5?'Moderately similar':'Dissimilar'}
+    </div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <div class="mp-lbl">All 6 pair cosines</div>
+    ${[0,1,2,3].map(i=>[0,1,2,3].filter(j=>j>i).map(j=>{
+      const cs2=proxCos(i,j);
+      const ang2=(Math.acos(Math.min(1,Math.max(-1,cs2)))*180/Math.PI).toFixed(1);
+      const isSel=(i===proxSelA&&j===proxSelB)||(i===proxSelB&&j===proxSelA);
+      const col2=cs2>0.95?'#4ade80':cs2>0.8?'#86efac':cs2>0.6?'#fbbf24':'#f87171';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-radius:5px;margin-bottom:3px;background:'+(isSel?'rgba(255,255,255,.06)':'transparent')+';border:'+(isSel?'1px solid rgba(255,255,255,.12)':'1px solid transparent')+';">' +
+        '<span style="font-family:IBM Plex Mono,monospace;font-size:.66rem;color:rgba(255,255,255,.5);">'+
+        '<span style="color:'+PROX_WORDS[i].col+';">'+PROX_WORDS[i].name+'</span>↔<span style="color:'+PROX_WORDS[j].col+';">'+PROX_WORDS[j].name+'</span></span>' +
+        '<span style="font-family:Space Mono,monospace;font-size:.7rem;font-weight:700;color:'+col2+';">'+cs2.toFixed(3)+'</span>' +
+        '</div>';
+    }).join('')).join('')}
+  </div>`;
+}
+
+function buildProxChips(){
+  const el=document.getElementById('proxChips');
+  if(!el)return;
+  el.innerHTML='<div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.28);width:100%;margin-bottom:4px;">Click two words to compare:</div>'+
+  PROX_WORDS.map((pw,i)=>`<button style="padding:6px 14px;border-radius:8px;border:2px solid ${pw.col}${i===proxSelA||i===proxSelB?'':44};background:${i===proxSelA?pw.col+'33':i===proxSelB?pw.col+'22':pw.col+'11'};color:${pw.col};font-weight:700;font-size:.8rem;cursor:pointer;font-family:DM Sans,sans-serif;transition:all .15s;" data-pi="${i}">${pw.name} [${pw.v}]</button>`).join('');
+  el.querySelectorAll('[data-pi]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i=parseInt(btn.dataset.pi);
+      if(i===proxSelA||i===proxSelB){
+        // deselect and reselect
+        if(i===proxSelA) proxSelA=proxSelB;
+        proxSelB=i;
+      } else {
+        proxSelA=proxSelB; proxSelB=i;
+      }
+      buildProxChips(); drawProxCanvas();
+    });
+  });
+}
+
+
+// INIT
+buildSentenceDisplay();
+buildVocabDisplay();
+buildBOWDisplay();
+buildWorkedExample();
+renderSentChips();
+renderLiveCalc();
+drawAngleCanvas();
+buildRangeZones();
+buildVsCompare();
+renderEmbContent();
+buildProxChips();
+drawProxCanvas();
+</script>
+<div class="wm-diag"></div>
+<div class="wm-badge">
+  <div class="wm-av">YP</div>
+  <div class="wm-txt">
+    <span class="wm-by">Created by</span>
+    <span class="wm-name">Yogita Patil</span>
+  </div>
+</div>
+</body>
+</html>
