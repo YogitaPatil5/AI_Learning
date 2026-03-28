@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Vectors — Complete Interactive Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0f4ff;--sur:#fff;--s2:#eef2ff;--bor:#c7d2fe;--txt:#1e1b4b;--mut:#4338ca;--acc:#4f46e5;--grn:#059669;--org:#ea580c;--pur:#7c3aed;--yel:#d97706;--red:#dc2626;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;min-height:100vh;padding-bottom:60px;}
+.topbar{background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(79,70,229,.3);}
+.topbar-title{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff;}
+.topbar-author{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45);border-radius:25px;padding:6px 14px;flex-shrink:0;}
+.topbar-author .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fff,#e0e7ff);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#4f46e5;flex-shrink:0;}
+.topbar-author .aname{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#fff;white-space:nowrap;}
+.topbar-author .alabel{font-size:10px;color:rgba(255,255,255,.75);font-family:'Inter',sans-serif;white-space:nowrap;}
+.wm-badge{position:fixed;bottom:20px;right:22px;z-index:9999;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.95);border:1px solid #c7d2fe;border-radius:30px;padding:8px 16px 8px 10px;box-shadow:0 4px 20px rgba(79,70,229,.2);animation:wmPulse 3s ease-in-out infinite;}
+@keyframes wmPulse{0%,100%{box-shadow:0 4px 20px rgba(79,70,229,.2)}50%{box-shadow:0 4px 28px rgba(79,70,229,.42)}}
+.wm-badge .wm-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.wm-badge .wm-txt{display:flex;flex-direction:column;gap:1px;}
+.wm-badge .wm-by{font-size:10px;color:#6366f1;font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:.6px;font-weight:600;}
+.wm-badge .wm-name{font-family:'Syne',sans-serif;font-weight:800;font-size:13.5px;color:#1e1b4b;}
+.wm-diagonal{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.wm-diagonal::after{content:'Created by Yogita Patil';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(24px,4vw,52px);color:rgba(79,70,229,.05);white-space:nowrap;letter-spacing:5px;text-transform:uppercase;pointer-events:none;}
+.nb{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;}
+.nb:hover{background:rgba(255,255,255,.3);}
+.nb.on{background:#fff;color:#4f46e5;}
+.page{display:none;padding:30px 22px 60px;max-width:1050px;margin:0 auto;}
+.page.on{display:block;animation:fu .3s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:30px;color:#1e1b4b;margin-bottom:8px;}
+h1 span{background:linear-gradient(135deg,#4f46e5,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+h2{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:#4f46e5;margin:24px 0 10px;}
+h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:#1e1b4b;margin:18px 0 8px;}
+p{font-size:15.5px;line-height:1.75;color:#374151;margin-bottom:10px;}
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:12px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 10px rgba(79,70,229,.07);}
+.f{background:#f5f3ff;border-left:4px solid #7c3aed;border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;white-space:pre-wrap;overflow-x:auto;color:#1e1b4b;}
+.fl{font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:4px;}
+.res{border-radius:8px;padding:10px 14px;font-size:15px;margin:8px 0;font-family:'JetBrains Mono',monospace;}
+.ri{background:#eff6ff;border:1px solid #a5b4fc;color:#4f46e5;}
+.rg{background:#f0fdf4;border:1px solid #86efac;color:#15803d;}
+.rw{background:#fffbeb;border:1px solid #fde68a;color:#d97706;}
+.rr{background:#fef2f2;border:1px solid #fca5a5;color:#dc2626;}
+.row{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap;}
+.bdg{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--s2);border:1px solid var(--bor);border-radius:8px;padding:3px 11px;min-width:54px;text-align:center;color:var(--txt);}
+.step{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--bor);}
+.step:last-child{border-bottom:none;}
+.num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.np{background:#eff6ff;color:#4f46e5;}.nt{background:#f0fdf4;color:#059669;}.na{background:#fffbeb;color:#d97706;}.nc{background:#fef2f2;color:#dc2626;}
+.stxt{font-size:15.5px;line-height:1.7;color:#1e1b4b;}
+label{font-size:15px;color:#374151;}
+input[type=number]{width:62px;font-size:14.5px;font-family:'JetBrains Mono',monospace;padding:4px 6px;border:1px solid var(--bor);border-radius:6px;background:#fff;color:#1e1b4b;}
+input[type=range]{accent-color:#4f46e5;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;}
+@media(max-width:580px){.g2{grid-template-columns:1fr;}}
+.notice{background:#eff6ff;border:1px solid #a5b4fc;border-radius:10px;padding:12px 16px;font-size:15.5px;color:#4338ca;margin:12px 0;}
+.sim-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+.sim-lbl{font-size:14.5px;font-family:'JetBrains Mono',monospace;width:104px;flex-shrink:0;color:#4338ca;}
+.sim-trk{flex:1;height:11px;background:#e0e7ff;border-radius:5px;overflow:hidden;}
+.sim-fill{height:100%;border-radius:5px;}
+.sim-v{font-size:13.5px;font-family:'JetBrains Mono',monospace;width:46px;text-align:right;color:#4338ca;}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px;margin:10px 0;}
+.tbl th{background:#eff6ff;color:#4f46e5;padding:10px 13px;border:1px solid #c7d2fe;font-weight:600;text-align:left;}
+.tbl td{padding:10px 13px;border:1px solid #c7d2fe;color:#1e1b4b;}
+.tbl tr:nth-child(even) td{background:#f5f3ff;}
+button{font-size:15px;padding:9px 20px;border-radius:8px;border:2px solid #a5b4fc;background:#fff;color:#4f46e5;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;}
+button:hover{background:#eff6ff;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">🧮 Vectors — Complete Guide</div>
+  <button class="nb on" onclick="G('p1')">1. Basics</button>
+  <button class="nb" onclick="G('p2')">2. Unit vector</button>
+  <button class="nb" onclick="G('p3')">3. Add/Subtract</button>
+  <button class="nb" onclick="G('p4')">4. Angle between</button>
+  <button class="nb" onclick="G('p5')">5. Dot product</button>
+  <button class="nb" onclick="G('p6')">6. Cross product</button>
+  <button class="nb" onclick="G('p7')">7. Triple products</button>
+  <button class="nb" onclick="G('p8')">8. Projection</button>
+  <button class="nb" onclick="G('p9')">9. Section formula</button>
+  <button class="nb" onclick="G('p10')">10. Vectors in AI</button>
+  <div class="topbar-author">
+    <div class="avatar">YP</div>
+    <div style="display:flex;flex-direction:column;gap:1px;">
+      <span class="alabel">Created by</span>
+      <span class="aname">Yogita Patil</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1 -->
+<div class="page on" id="p1">
+<h1>What is a <span>Vector?</span></h1>
+<p>A vector has both <strong>magnitude</strong> (size) and <strong>direction</strong>. A scalar only has magnitude.</p>
+<div class="notice">From your notes — Speed = 100 km/hr (scalar, no direction). Velocity = 100 km/hr North (vector, has direction)!</div>
+<div class="g2">
+<div class="card"><h3>Scalars (no direction)</h3><div style="font-size:15px;line-height:2.1;color:#374151;">Speed, temperature, mass<br>Time, distance, energy<br>Pressure, volume</div></div>
+<div class="card"><h3>Vectors (have direction)</h3><div style="font-size:15px;line-height:2.1;color:#374151;">Velocity, force, displacement<br>Acceleration, momentum<br>Torque, angular velocity</div></div>
+</div>
+<h2>Component Notation</h2>
+<div class="f"><span class="fl">from your whiteboard — OA = 4î + 2ĵ</span>OA = 4î + 2ĵ
+
+Meaning:
+  4 units along x-axis  (î = [1,0,0])
+  2 units along y-axis  (ĵ = [0,1,0])
+
+General 3D:  v = aî + bĵ + ck̂
+  where k̂ = [0,0,1]  (z-axis direction)</div>
+
+<h2>Magnitude Formula</h2>
+<div class="f"><span class="fl">pythagorean theorem — from your notes</span>2D: |v| = sqrt(x² + y²)
+3D: |v| = sqrt(x² + y² + z²)
+
+Your example:
+  OA = 4î + 2ĵ
+  |OA| = sqrt(4² + 2²) = sqrt(16+4) = sqrt(20) = 2√5 ≈ 4.47</div>
+
+<h2>Interactive Diagram</h2>
+<div class="card">
+<div class="row"><label>x component:</label><input type="range" min="-6" max="6" value="4" step="1" id="bx" style="flex:1" oninput="dB()"><span class="bdg" id="bxb">4</span></div>
+<div class="row"><label>y component:</label><input type="range" min="-6" max="6" value="2" step="1" id="by" style="flex:1" oninput="dB()"><span class="bdg" id="byb">2</span></div>
+<svg id="bsvg" width="100%" viewBox="0 0 340 280" style="margin-top:10px;"></svg>
+<div class="res ri" id="br"></div>
+</div>
+<h2>7 Types of Vectors</h2>
+<div class="card">
+<div class="step"><div class="num np">1</div><div class="stxt"><strong>Zero vector 0⃗</strong> — magnitude = 0, no direction</div></div>
+<div class="step"><div class="num nt">2</div><div class="stxt"><strong>Unit vector â</strong> — magnitude = 1, shows direction only</div></div>
+<div class="step"><div class="num na">3</div><div class="stxt"><strong>Equal vectors</strong> — same magnitude AND same direction</div></div>
+<div class="step"><div class="num nc">4</div><div class="stxt"><strong>Negative vector −v</strong> — same magnitude, opposite direction</div></div>
+<div class="step"><div class="num np">5</div><div class="stxt"><strong>Co-initial vectors</strong> — all start from the same point</div></div>
+<div class="step"><div class="num nt">6</div><div class="stxt"><strong>Collinear vectors</strong> — parallel. One = scalar multiple: a = λb</div></div>
+<div class="step"><div class="num na">7</div><div class="stxt"><strong>Coplanar vectors</strong> — three vectors in the same plane. [a b c] = 0 <em style="color:#d97706">(only valid when vectors share the same origin)</em></div></div>
+</div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="p2">
+<h1>Unit Vector <span>â</span></h1>
+<p>A unit vector has magnitude exactly 1. It captures <strong>direction only</strong>, stripping away size. Written with hat: â ("a hat").</p>
+<div class="notice">Your whiteboard shows this exactly! â = OA / |OA| = (4î + 2ĵ) / sqrt(20)</div>
+
+<h2>Standard Unit Vectors î  ĵ  k̂</h2>
+<div class="f"><span class="fl">the 3 fundamental directions</span>î = [1, 0, 0]  →  x-axis direction   |î| = 1
+ĵ = [0, 1, 0]  →  y-axis direction   |ĵ| = 1
+k̂ = [0, 0, 1]  →  z-axis direction   |k̂| = 1
+
+Your notes:
+  î → unit vector towards X axis
+  ĵ → unit vector towards Y axis</div>
+
+<h2>Finding a Unit Vector — Full Steps</h2>
+<div class="f"><span class="fl">your exact whiteboard example</span>Given: OA = 4î + 2ĵ
+
+Step 1 — find magnitude:
+  |OA| = sqrt(4² + 2²) = sqrt(20) = 2√5
+
+Step 2 — divide each component by magnitude:
+  â = OA / |OA|
+    = (4î + 2ĵ) / sqrt(20)
+    = (4/sqrt(20))î + (2/sqrt(20))ĵ
+    = 0.8944î + 0.4472ĵ
+
+Step 3 — verify (must equal 1):
+  |â| = sqrt(0.8944² + 0.4472²)
+       = sqrt(0.7999 + 0.1999)
+       = sqrt(1.0) = 1  ✓</div>
+
+<h2>Interactive Calculator</h2>
+<div class="card">
+<div class="row"><label>v = [</label><input type="number" id="ux" value="4"><label>,</label><input type="number" id="uy" value="2"><label>,</label><input type="number" id="uz" value="0"><label>] (z=0 for 2D)</label></div>
+<button onclick="cU()" style="margin:.6rem 0">Find unit vector â</button>
+<div id="uout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+</div>
+<h2>⚠ Edge Case — Zero Vector</h2>
+<div class="card" style="border-color:#fca5a5;background:#fef2f2;">
+<div class="step"><div class="num nc">!</div><div class="stxt"><strong>Unit vector is undefined for the zero vector.</strong><br>The zero vector 0⃗ has magnitude = 0. Division by zero is undefined, so â = 0⃗ / 0 has no meaning. Always check |v| ≠ 0 before computing a unit vector.</div></div>
+<div class="f" style="background:#fff0f0;border-left-color:#dc2626;margin-top:8px;"><span class="fl" style="color:#dc2626;">rule</span>If |v| = 0  →  â is UNDEFINED  (zero vector has no direction)
+If |v| ≠ 0  →  â = v / |v|  (always gives |â| = 1)</div>
+</div>
+<h2>Why Unit Vectors Matter</h2>
+<div class="card">
+<div class="step"><div class="num np">1</div><div class="stxt"><strong>Direction only:</strong> strip away magnitude, keep just "which way"</div></div>
+<div class="step"><div class="num nt">2</div><div class="stxt"><strong>Basis vectors:</strong> any vector = x·î + y·ĵ + z·k̂</div></div>
+<div class="step"><div class="num na">3</div><div class="stxt"><strong>In AI:</strong> normalising embeddings makes cosine similarity = just a dot product</div></div>
+<div class="step"><div class="num nc">4</div><div class="stxt"><strong>In physics:</strong> force direction, field lines, surface normals</div></div>
+</div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="p3">
+<h1>Addition, Subtraction, <span>Scalar Multiplication</span></h1>
+<h2>Triangle Law (Tip-to-Tail)</h2>
+<div class="f"><span class="fl">add component by component</span>a + b = (a_x+b_x)î + (a_y+b_y)ĵ
+
+Example:   a = 3î + 2ĵ,   b = 1î + 4ĵ
+  a + b = (3+1)î + (2+4)ĵ = 4î + 6ĵ
+  |a+b| = sqrt(16+36) = sqrt(52) ≈ 7.21</div>
+
+<h2>Parallelogram Law</h2>
+<div class="f"><span class="fl">magnitude when angle θ between a and b</span>|R|² = |a|² + |b|² + 2|a||b|cos(θ)
+
+Special cases:
+  θ = 0°:    |R| = |a| + |b|             (maximum)
+  θ = 90°:   |R| = sqrt(|a|² + |b|²)    (Pythagoras)
+  θ = 180°:  |R| = | |a| − |b| |         (minimum)</div>
+
+<h2>Interactive Calculator</h2>
+<div class="card">
+<div class="row"><label>a = [</label><input type="number" id="ax" value="3"><label>,</label><input type="number" id="ay" value="2"><label>]</label></div>
+<div class="row"><label>b = [</label><input type="number" id="adx" value="1"><label>,</label><input type="number" id="ady" value="4"><label>]</label></div>
+<div style="display:flex;gap:10px;margin:10px 0;"><button onclick="cA(1)">Calculate a + b</button><button onclick="cA(-1)">Calculate a − b</button></div>
+<div id="addout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+<svg id="addsvg" width="100%" viewBox="0 0 340 280" style="margin-top:10px;"></svg>
+</div>
+<h2>Scalar Multiplication</h2>
+<div class="f"><span class="fl">multiply every component by k</span>k × (aî+bĵ) = (ka)î + (kb)ĵ
+
+k > 0  → same direction, different size
+k < 0  → REVERSES direction
+k = 0  → zero vector
+
+v = 2î + 3ĵ
+  3v    =  6î + 9ĵ    (tripled)
+  −v    = −2î − 3ĵ   (reversed)
+  0.5v  =  1î + 1.5ĵ  (halved)</div>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" id="p4">
+<h1>Angle Between <span>Two Vectors</span></h1>
+<div class="f"><span class="fl">formula — from dot product definition</span>cos(θ) = (a · b) / (|a| × |b|)
+θ = arccos( (a · b) / (|a| × |b|) )
+Range: 0° ≤ θ ≤ 180°</div>
+
+<h2>Full Worked Example</h2>
+<div class="f"><span class="fl">a = [1,2,2]  and  b = [2,1,−2]</span>Step 1 — dot product:
+  a·b = 1×2 + 2×1 + 2×(−2) = 2 + 2 − 4 = 0
+
+Step 2 — magnitudes:
+  |a| = sqrt(1+4+4) = sqrt(9) = 3
+  |b| = sqrt(4+1+4) = sqrt(9) = 3
+
+Step 3:
+  cos(θ) = 0 / (3 × 3) = 0
+  θ = arccos(0) = 90° ← PERPENDICULAR!</div>
+
+<h2>Interactive Calculator</h2>
+<div class="card">
+<div class="row"><label>a = [</label><input type="number" id="an1" value="1"><label>,</label><input type="number" id="an2" value="2"><label>,</label><input type="number" id="an3" value="2"><label>]</label></div>
+<div class="row"><label>b = [</label><input type="number" id="bn1" value="2"><label>,</label><input type="number" id="bn2" value="1"><label>,</label><input type="number" id="bn3" value="-2"><label>]</label></div>
+<button onclick="cAng()" style="margin:10px 0;">Find angle between a and b</button>
+<div id="angout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+</div>
+
+<h2>Angle Slider</h2>
+<div class="card">
+<div class="row"><label>θ:</label><input type="range" min="0" max="180" value="45" step="1" id="angsl" style="flex:1" oninput="dAng()"><span class="bdg" id="angslb">45°</span></div>
+<svg id="angslsvg" width="100%" viewBox="0 0 340 210"></svg>
+<div class="res ri" id="angslr"></div>
+</div>
+
+<h2>Direction Cosines</h2>
+<div class="f"><span class="fl">angles with each axis</span>v = aî+bĵ+ck̂,   |v| = r
+
+  cos(α) = a/r  ← angle with x-axis
+  cos(β)  = b/r  ← angle with y-axis
+  cos(γ)  = c/r  ← angle with z-axis
+
+Identity (ALWAYS true):
+  cos²α + cos²β + cos²γ = 1
+
+Example: v=[1,2,2], r=3
+  1/9 + 4/9 + 4/9 = 9/9 = 1 ✓</div>
+</div>
+
+<!-- PAGE 5 -->
+<div class="page" id="p5">
+<h1>Dot Product <span>(Scalar Product)</span></h1>
+<p>Result is a <strong>single number</strong>. Measures alignment. Used in AI attention, work calculations, and similarity.</p>
+<div class="g2">
+<div class="f"><span class="fl">algebraic formula</span>a·b = a₁b₁ + a₂b₂ + a₃b₃</div>
+<div class="f"><span class="fl">geometric formula</span>a·b = |a| |b| cos(θ)</div>
+</div>
+<h2>What the Result Tells You</h2>
+<div class="g2">
+<div class="card" style="border-color:#86efac;"><div style="font-size:17px;font-weight:600;color:#15803d;margin-bottom:8px;">a · b &gt; 0</div><p>Angle &lt; 90° — pointing same way</p></div>
+<div class="card"><div style="font-size:17px;font-weight:600;color:#d97706;margin-bottom:8px;">a · b = 0</div><p>Angle = 90° — perpendicular!</p></div>
+<div class="card" style="border-color:#fca5a5;"><div style="font-size:17px;font-weight:600;color:#dc2626;margin-bottom:8px;">a · b &lt; 0</div><p>Angle &gt; 90° — opposing direction</p></div>
+<div class="card" style="border-color:#a5b4fc;"><div style="font-size:17px;font-weight:600;color:#4f46e5;margin-bottom:8px;">a · a = |a|²</div><p>Dot with itself = magnitude²</p></div>
+</div>
+<h2>Step-by-Step Calculator</h2>
+<div class="card">
+<div class="row"><label>a = [</label><input type="number" id="da1" value="2"><label>,</label><input type="number" id="da2" value="3"><label>,</label><input type="number" id="da3" value="0"><label>]</label></div>
+<div class="row"><label>b = [</label><input type="number" id="db1" value="4"><label>,</label><input type="number" id="db2" value="1"><label>,</label><input type="number" id="db3" value="0"><label>]</label></div>
+<button onclick="cDot()" style="margin:10px 0;">Calculate dot product</button>
+<div id="dout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+</div>
+<h2>Key Identities — Memorise</h2>
+<div class="f"><span class="fl">unit vector dot products</span>î·î = 1    ĵ·ĵ = 1    k̂·k̂ = 1   (parallel → 1)
+î·ĵ = 0    î·k̂ = 0    ĵ·k̂ = 0   (perpendicular → 0)
+
+Work done:  W = F · d = |F||d|cos(θ)</div>
+</div>
+
+<!-- PAGE 6 -->
+<div class="page" id="p6">
+<h1>Cross Product <span>(Vector Product)</span></h1>
+<p>Result is a <strong>vector perpendicular to both inputs</strong>. Only in 3D. Used for area, torque, and surface normals.</p>
+<div class="f"><span class="fl">magnitude = area of parallelogram</span>|a×b| = |a| |b| sin(θ)   ← perpendicular when θ=90°
+
+Direction: right-hand rule
+  (curl fingers a→b, thumb = direction of a×b)</div>
+<div class="f"><span class="fl">determinant formula</span>a×b = | î   ĵ   k̂  |
+      | a₁  a₂  a₃ |
+      | b₁  b₂  b₃ |
+= î(a₂b₃−a₃b₂) − ĵ(a₁b₃−a₃b₁) + k̂(a₁b₂−a₂b₁)</div>
+<h2>Worked Example</h2>
+<div class="f"><span class="fl">a = 2î+3ĵ+k̂,   b = î+2ĵ+4k̂</span>î: 3×4 − 1×2 = 10
+ĵ: −(2×4 − 1×1) = −7
+k̂: 2×2 − 3×1 = 1
+
+a×b = 10î − 7ĵ + k̂
+|a×b| = sqrt(150) = 5√6  (area of parallelogram)
+
+Check: (a×b)·a = 20−21+1 = 0 ✓  (perpendicular)</div>
+<h2>Interactive Calculator</h2>
+<div class="card">
+<div class="row"><label>a = [</label><input type="number" id="ca1" value="2"><label>,</label><input type="number" id="ca2" value="3"><label>,</label><input type="number" id="ca3" value="1"><label>]</label></div>
+<div class="row"><label>b = [</label><input type="number" id="cb1" value="1"><label>,</label><input type="number" id="cb2" value="2"><label>,</label><input type="number" id="cb3" value="4"><label>]</label></div>
+<button onclick="cCross()" style="margin:10px 0;">Calculate a × b</button>
+<div id="cout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+</div>
+<h2>Cyclic Identities</h2>
+<div class="f"><span class="fl">î → ĵ → k̂ → î (cyclic order)</span>î×ĵ=k̂    ĵ×k̂=î    k̂×î=ĵ    (positive cyclic)
+ĵ×î=−k̂   k̂×ĵ=−î   î×k̂=−ĵ   (negative)
+î×î=0     ĵ×ĵ=0    k̂×k̂=0    (parallel = zero)</div>
+<h2>Dot vs Cross Comparison</h2>
+<table class="tbl">
+<thead><tr><th>Property</th><th>Dot product a·b</th><th>Cross product a×b</th></tr></thead>
+<tbody>
+<tr><td>Output</td><td>Scalar (number)</td><td>Vector</td></tr>
+<tr><td>Formula</td><td>|a||b|cos(θ)</td><td>|a||b|sin(θ)</td></tr>
+<tr><td>Parallel vectors</td><td>Maximum value</td><td>Zero</td></tr>
+<tr><td>Perpendicular</td><td>Zero</td><td>Maximum</td></tr>
+<tr><td>Commutative?</td><td>Yes: a·b = b·a</td><td>No: a×b = −(b×a)</td></tr>
+<tr><td>AI use</td><td>Attention scores, similarity</td><td>3D vision, robotics</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- PAGE 7 -->
+<div class="page" id="p7">
+<h1>Triple Products</h1>
+<h2>Scalar Triple Product [a b c]</h2>
+<div class="f"><span class="fl">definition</span>[a b c] = a · (b × c) = | a₁  a₂  a₃ |
+                             | b₁  b₂  b₃ |
+                             | c₁  c₂  c₃ |
+
+|[a b c]| = VOLUME of parallelepiped with edges a, b, c
+[a b c] = 0  →  vectors are COPLANAR
+  ⚠ Valid only when all three vectors share the same origin</div>
+<h2>Worked Example</h2>
+<div class="f"><span class="fl">a=î−ĵ+k̂,  b=2î+3ĵ−k̂,  c=−î−ĵ+5k̂</span>[a b c] = |  1  −1   1 |
+          |  2   3  −1 |
+          | −1  −1   5 |
+= 1(15−1) − (−1)(10−1) + 1(−2+3)
+= 14 + 9 + 1 = 24
+
+Volume = |24| = 24 cubic units</div>
+<h2>Interactive Calculator</h2>
+<div class="card">
+<div class="row"><label>a=[</label><input type="number" id="ta1" value="1"><label>,</label><input type="number" id="ta2" value="-1"><label>,</label><input type="number" id="ta3" value="1"><label>]</label></div>
+<div class="row"><label>b=[</label><input type="number" id="tb1" value="2"><label>,</label><input type="number" id="tb2" value="3"><label>,</label><input type="number" id="tb3" value="-1"><label>]</label></div>
+<div class="row"><label>c=[</label><input type="number" id="tc1" value="-1"><label>,</label><input type="number" id="tc2" value="-1"><label>,</label><input type="number" id="tc3" value="5"><label>]</label></div>
+<button onclick="cSTP()" style="margin:10px 0;">Calculate [a b c] and volume</button>
+<div id="stpout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+</div>
+<h2>Properties</h2>
+<div class="card">
+<div class="step"><div class="num np">1</div><div class="stxt"><strong>Cyclic unchanged:</strong> [a b c] = [b c a] = [c a b]</div></div>
+<div class="step"><div class="num nt">2</div><div class="stxt"><strong>Anti-cyclic changes sign:</strong> [a b c] = −[a c b]</div></div>
+<div class="step"><div class="num na">3</div><div class="stxt"><strong>Coplanar test:</strong> [a b c] = 0 ⟺ coplanar <em style="color:#d97706">(requires all three vectors from same origin)</em></div></div>
+<div class="step"><div class="num nc">4</div><div class="stxt"><strong>Interchangeable:</strong> a·(b×c) = (a×b)·c</div></div>
+</div>
+<h2>Vector Triple Product — BAC-CAB Rule</h2>
+<div class="f"><span class="fl">a × (b × c) = b(a·c) − c(a·b)</span>Result: VECTOR lying in the plane of b and c.
+NOT associative: a×(b×c) ≠ (a×b)×c</div>
+</div>
+
+<!-- PAGE 8 -->
+<div class="page" id="p8">
+<h1>Vector <span>Projection</span></h1>
+<p>How much of one vector lies along the direction of another.</p>
+<h2>Scalar Projection — A Number</h2>
+<div class="f"><span class="fl">how far a "reaches" in direction of b</span>scalar_proj = (a·b) / |b| = |a| cos(θ)
+
+Example: a=[3,4], b=[1,0]
+  scalar_proj = (3×1+4×0) / 1 = 3</div>
+<h2>Vector Projection — A Vector</h2>
+<div class="f"><span class="fl">component of a along b</span>vector_proj = (a·b / b·b) × b
+
+Example: a=[3,4], b=[2,1]
+  a·b=10, b·b=5
+  proj = (10/5)×[2,1] = [4,2]
+
+Perpendicular component:
+  perp = a − proj = [3,4]−[4,2] = [−1,2]
+  Check: proj·perp = −4+4 = 0 ✓</div>
+<h2>Interactive Demo</h2>
+<div class="card">
+<div class="row"><label>a = [</label><input type="number" id="pa1" value="3"><label>,</label><input type="number" id="pa2" value="4"><label>]</label></div>
+<div class="row"><label>onto b = [</label><input type="number" id="pb1" value="2"><label>,</label><input type="number" id="pb2" value="1"><label>]</label></div>
+<button onclick="cProj()" style="margin:10px 0;">Calculate projection</button>
+<div id="pout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+<svg id="psvg" width="100%" viewBox="0 0 320 260" style="margin-top:10px;"></svg>
+</div>
+</div>
+
+<!-- PAGE 9 -->
+<div class="page" id="p9">
+<h1>Section <span>Formula</span></h1>
+<p>Find position vector of point P that divides line segment AB in ratio m:n.</p>
+<h2>Internal Division</h2>
+<div class="f"><span class="fl">P divides AB internally in ratio m:n</span>OP = (m × OB + n × OA) / (m + n)
+
+Example: A=(1,2), B=(7,5), ratio 2:1
+  OP = (2×[7,5] + 1×[1,2]) / 3
+     = [5, 4]</div>
+<h2>External Division</h2>
+<div class="f"><span class="fl">P divides AB externally in ratio m:n</span>OP = (m × OB − n × OA) / (m − n)
+
+Example: A=(1,2), B=(7,5), ratio 3:1 externally
+  OP = (3×[7,5] − 1×[1,2]) / 2 = [10, 6.5]</div>
+<h2>Midpoint (m = n = 1)</h2>
+<div class="f"><span class="fl">midpoint formula</span>M = (OA + OB) / 2
+
+Example: A=(2,4), B=(6,8)
+  M = [4, 6] ✓</div>
+<h2>Interactive Calculator</h2>
+<div class="card">
+<div class="row"><label>A=(</label><input type="number" id="sa1" value="1"><label>,</label><input type="number" id="sa2" value="2"><label>)</label></div>
+<div class="row"><label>B=(</label><input type="number" id="sb1" value="7"><label>,</label><input type="number" id="sb2" value="5"><label>)</label></div>
+<div class="row"><label>Ratio m:</label><input type="number" id="sm" value="2"><label> n:</label><input type="number" id="sn" value="1"></div>
+<div style="display:flex;gap:10px;margin:10px 0;"><button onclick="cSec(1)">Internal division</button><button onclick="cSec(-1)">External division</button></div>
+<div id="secout" style="font-family:'JetBrains Mono',monospace;font-size:14.5px;line-height:2.1;margin-top:10px;white-space:pre-wrap;color:#1e1b4b;"></div>
+</div>
+<h2>Collinearity Test</h2>
+<div class="f"><span class="fl">A, B, C are collinear if AB = λ × AC</span>Example: A=(1,2), B=(3,6), C=(5,10)
+  AB=[2,4]  AC=[4,8] = 2×[2,4]
+  λ=2  →  A, B, C are COLLINEAR ✓</div>
+</div>
+
+<!-- PAGE 10 -->
+<div class="page" id="p10">
+<h1>Vectors in <span>Modern AI</span></h1>
+<p>Every concept from pages 1–9 maps directly into real AI systems. This is exact mathematics.</p>
+
+<h2>Word Embeddings — Click any word</h2>
+<div class="card">
+<div id="wbtns" style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:12px;"></div>
+<div id="wout"></div>
+</div>
+
+<h2>Complete Maths → AI Mapping</h2>
+<table class="tbl">
+<thead><tr><th>Vector concept</th><th>Formula</th><th>AI application</th></tr></thead>
+<tbody>
+<tr><td>Magnitude</td><td>sqrt(Σvᵢ²)</td><td>Embedding size, L2 norm</td></tr>
+<tr><td>Unit vector</td><td>â = v/|v|</td><td>Normalised embeddings</td></tr>
+<tr><td>Dot product</td><td>Σaᵢbᵢ</td><td>Attention scores in GPT</td></tr>
+<tr><td>Cosine similarity</td><td>(a·b)/(|a||b|)</td><td>Semantic search, RAG</td></tr>
+<tr><td>Vector addition</td><td>a + b</td><td>king−man+woman≈queen</td></tr>
+<tr><td>Projection</td><td>(a·b/|b|²)b</td><td>PCA, dimensionality reduction</td></tr>
+<tr><td>Angle between</td><td>arccos(a·b/|a||b|)</td><td>Token similarity ranking</td></tr>
+<tr><td>Cross product</td><td>a×b</td><td>3D vision, robotics</td></tr>
+<tr><td>Triple product</td><td>a·(b×c)</td><td>3D spatial orientation</td></tr>
+</tbody>
+</table>
+
+<h2>Transformer Attention = Dot Product</h2>
+<div class="f"><span class="fl">core formula of GPT, BERT, Claude</span>Attention(Q,K,V) = softmax( Q·Kᵀ / sqrt(d_k) ) × V
+
+Q = Query   "What am I looking for?"
+K = Key     "What does each token offer?"
+V = Value   "What info to pass forward?"
+
+Q·Kᵀ = matrix of DOT PRODUCTS = attention scores!
+sqrt(d_k) = variance stabilization, NOT normalization.
+  When d_k is large, dot products Q·Kᵀ grow in magnitude,
+  pushing softmax into regions with near-zero gradients
+  (very flat distribution → vanishing updates during training).
+  Dividing by sqrt(d_k) keeps variance ≈ 1 regardless of d_k.</div>
+
+<h2>Cosine Similarity Search</h2>
+<div class="card">
+<div class="row"><label>Query vector = [</label><input type="number" id="cs1" value="0.82" step="0.1"><label>,</label><input type="number" id="cs2" value="0.44" step="0.1"><label>,</label><input type="number" id="cs3" value="0.77" step="0.1"><label>]</label></div>
+<button onclick="cCS()" style="margin:10px 0;">Find similar words</button>
+<div id="csout" style="margin-top:10px;"></div>
+</div>
+
+<h2>king − man + woman ≈ queen</h2>
+<div class="f"><span class="fl">vector arithmetic = analogy solving</span>king  ≈ [0.82, 0.44, 0.77, ...]
+man   ≈ [0.41, 0.29, 0.33, ...]
+woman ≈ [0.39, 0.31, 0.34, ...]
+
+king − man + woman ≈ [0.80, 0.46, 0.78, ...]
+Nearest vector in space = "queen"!
+
+Vector subtraction removes one concept.
+Vector addition adds a new concept.
+VECTORS ENCODE MEANING AS GEOMETRY.</div>
+</div>
+
+<script>
+function G(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const idx={'p1':0,'p2':1,'p3':2,'p4':3,'p5':4,'p6':5,'p7':6,'p8':7,'p9':8,'p10':9}[id];
+  document.querySelectorAll('.nb')[idx].classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function arr(x1,y1,x2,y2,col,w){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  if(len<3)return'';
+  const nx=dx/len,ny=dy/len,hl=12;
+  const bx=x2-nx*hl,by=y2-ny*hl;
+  return`<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/><polygon points="${x2},${y2} ${bx-ny*5},${by+nx*5} ${bx+ny*5},${by-nx*5}" fill="${col}"/>`;
+}
+function grid(cx,cy,W,H,sc){
+  let g='';
+  for(let i=-8;i<=8;i++){
+    const x=cx+i*sc,y=cy+i*sc;
+    if(x>2&&x<W-2)g+=`<line x1="${x}" y1="2" x2="${x}" y2="${H-2}" stroke="#e0e7ff" stroke-width="0.8"/>`;
+    if(y>2&&y<H-2)g+=`<line x1="2" y1="${y}" x2="${W-2}" y2="${y}" stroke="#e0e7ff" stroke-width="0.8"/>`;
+  }
+  g+=`<line x1="2" y1="${cy}" x2="${W-2}" y2="${cy}" stroke="#a5b4fc" stroke-width="1.5"/>`;
+  g+=`<line x1="${cx}" y1="2" x2="${cx}" y2="${H-2}" stroke="#a5b4fc" stroke-width="1.5"/>`;
+  return g;
+}
+function dB(){
+  const vx=+document.getElementById('bx').value,vy=+document.getElementById('by').value;
+  document.getElementById('bxb').textContent=vx;document.getElementById('byb').textContent=vy;
+  const mag=Math.sqrt(vx*vx+vy*vy);
+  document.getElementById('br').textContent=`v = ${vx}î + ${vy}ĵ   |   |v| = ${mag.toFixed(3)}   |   angle = ${(Math.atan2(vy,vx)*180/Math.PI).toFixed(1)}°`;
+  const W=340,H=280,cx=170,cy=140,sc=22;const ex=cx+vx*sc,ey=cy-vy*sc;
+  let g=grid(cx,cy,W,H,sc);
+  [-6,-3,3,6].forEach(i=>{g+=`<text x="${cx+i*sc}" y="${cy+18}" font-size="12" text-anchor="middle" fill="#818cf8" font-family="JetBrains Mono,monospace">${i}</text>`;g+=`<text x="${cx-18}" y="${cy-i*sc+4}" font-size="12" text-anchor="middle" fill="#818cf8" font-family="JetBrains Mono,monospace">${i}</text>`;});
+  if(vx!==0||vy!==0){
+    g+=`<line x1="${cx}" y1="${cy}" x2="${ex}" y2="${cy}" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="6,3"/>`;
+    g+=`<line x1="${ex}" y1="${cy}" x2="${ex}" y2="${ey}" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="6,3"/>`;
+    if(vx!==0)g+=`<text x="${(cx+ex)/2}" y="${cy+(vy>=0?20:-8)}" font-size="14" text-anchor="middle" fill="#4f46e5" font-family="JetBrains Mono,monospace" font-weight="700">${vx}</text>`;
+    if(vy!==0)g+=`<text x="${ex+(vx>=0?20:-20)}" y="${(cy+ey)/2+5}" font-size="14" text-anchor="middle" fill="#4f46e5" font-family="JetBrains Mono,monospace" font-weight="700">${vy}</text>`;
+    g+=arr(cx,cy,ex,ey,'#4f46e5',3.5);
+    g+=`<text x="${Math.min(Math.max(ex+(vx>=0?8:-52),4),W-60)}" y="${Math.min(Math.max(ey+(vy<=0?-10:16),8),H-8)}" font-size="14" fill="#3730a3" font-family="JetBrains Mono,monospace" font-weight="700">(${vx},${vy})</text>`;
+  }
+  g+=`<circle cx="${cx}" cy="${cy}" r="6" fill="#4f46e5"/><text x="${cx-16}" y="${cy+18}" font-size="12" fill="#818cf8" font-family="JetBrains Mono,monospace">O</text>`;
+  document.getElementById('bsvg').innerHTML=g;
+}
+dB();
+function cU(){
+  const x=+document.getElementById('ux').value||0,y=+document.getElementById('uy').value||0,z=+document.getElementById('uz').value||0;
+  const mag=Math.sqrt(x*x+y*y+z*z);
+  if(!mag){document.getElementById('uout').textContent='Zero vector — no unit vector.';return;}
+  const ux=(x/mag).toFixed(5),uy=(y/mag).toFixed(5),uz=(z/mag).toFixed(5);
+  document.getElementById('uout').textContent=`v = ${x}î + ${y}ĵ + ${z}k̂\n|v| = sqrt(${x*x+y*y+z*z}) = ${mag.toFixed(5)}\n\nâ = v / |v|\n  = ${ux}î + ${uy}ĵ + ${uz}k̂\n\n|â| = ${Math.sqrt((x/mag)**2+(y/mag)**2+(z/mag)**2).toFixed(5)} ≈ 1 ✓`;
+}
+function cA(sign){
+  const ax=+document.getElementById('ax').value||0,ay=+document.getElementById('ay').value||0;
+  const bx=+document.getElementById('adx').value||0,by=+document.getElementById('ady').value||0;
+  const rx=ax+sign*bx,ry=ay+sign*by,op=sign>0?'+':'-';
+  document.getElementById('addout').textContent=`a=[${ax},${ay}]   b=[${bx},${by}]\n\na ${op} b = [${rx}, ${ry}]\n|a ${op} b| = ${Math.sqrt(rx*rx+ry*ry).toFixed(4)}`;
+  const W=340,H=280,cx=120,cy=200,sc=26;let g=grid(cx,cy,W,H,sc);
+  g+=arr(cx,cy,cx+ax*sc,cy-ay*sc,'#2563eb',3.2);g+=`<text x="${cx+ax*sc+7}" y="${cy-ay*sc-7}" font-size="14" fill="#1d4ed8" font-family="JetBrains Mono,monospace">a</text>`;
+  const tx=cx+ax*sc,ty=cy-ay*sc;
+  g+=arr(tx,ty,tx+sign*bx*sc,ty-sign*by*sc,'#059669',2.8);g+=`<text x="${tx+sign*bx*sc+7}" y="${ty-sign*by*sc-7}" font-size="14" fill="#065f46" font-family="JetBrains Mono,monospace">b</text>`;
+  g+=arr(cx,cy,cx+rx*sc,cy-ry*sc,'#7c3aed',3.8);g+=`<text x="${cx+rx*sc+7}" y="${cy-ry*sc-7}" font-size="14" fill="#4c1d95" font-weight="700" font-family="JetBrains Mono,monospace">a${op}b</text>`;
+  g+=`<circle cx="${cx}" cy="${cy}" r="6" fill="#7c3aed"/>`;
+  document.getElementById('addsvg').innerHTML=g;
+}
+cA(1);
+function cAng(){
+  const a1=+document.getElementById('an1').value||0,a2=+document.getElementById('an2').value||0,a3=+document.getElementById('an3').value||0;
+  const b1=+document.getElementById('bn1').value||0,b2=+document.getElementById('bn2').value||0,b3=+document.getElementById('bn3').value||0;
+  const dot=a1*b1+a2*b2+a3*b3;
+  const ma=Math.sqrt(a1*a1+a2*a2+a3*a3),mb=Math.sqrt(b1*b1+b2*b2+b3*b3);
+  if(!ma||!mb){document.getElementById('angout').textContent='Cannot compute — zero vector.';return;}
+  const cosT=Math.min(1,Math.max(-1,dot/(ma*mb)));
+  const deg=(Math.acos(cosT)*180/Math.PI).toFixed(4);
+  document.getElementById('angout').textContent=`Dot product: ${dot}\n|a| = ${ma.toFixed(4)},   |b| = ${mb.toFixed(4)}\n\ncos(θ) = ${cosT.toFixed(5)}\nθ = ${deg}°${Math.abs(cosT)<0.0001?' ← PERPENDICULAR!':''}`;
+}
+function dAng(){
+  const deg=+document.getElementById('angsl').value;
+  document.getElementById('angslb').textContent=deg+'°';
+  const cs=Math.cos(deg*Math.PI/180);
+  const interp=cs>0.7?'strongly aligned':cs>0.2?'somewhat aligned':cs>-0.2?'perpendicular (unrelated)':cs>-0.7?'somewhat opposing':'strongly opposing';
+  const col=cs>0.2?'#4f46e5':cs>-0.2?'#d97706':'#dc2626';
+  document.getElementById('angslr').textContent=`cos(${deg}°) = ${cs.toFixed(4)}   →   ${interp}`;
+  document.getElementById('angslr').className='res '+(cs>0.2?'ri':cs>-0.2?'rw':'rr');
+  const W=340,H=210,cx=135,cy=120,r=100;const rad=deg*Math.PI/180;
+  let g=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#c7d2fe" stroke-width="1.2" stroke-dasharray="5,4"/>`;
+  g+=arr(cx,cy,cx+r,cy,'#a5b4fc',3);g+=`<text x="${cx+r+9}" y="${cy+6}" font-size="15" fill="#6366f1" font-family="JetBrains Mono,monospace">a</text>`;
+  const bx=cx+r*Math.cos(rad),by=cy-r*Math.sin(rad);
+  g+=arr(cx,cy,bx,by,col,3.5);g+=`<text x="${bx+6*Math.sign(Math.cos(rad)||1)}" y="${by-6}" font-size="15" fill="${col}" font-family="JetBrains Mono,monospace">b</text>`;
+  if(deg>3&&deg<357){
+    g+=`<path d="M ${cx+38},${cy} A 38,38 0 ${deg>180?1:0},1 ${cx+38*Math.cos(rad)},${cy-38*Math.sin(rad)}" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>`;
+    g+=`<text x="${cx+58*Math.cos(rad/2)}" y="${cy-58*Math.sin(rad/2)+5}" font-size="13" text-anchor="middle" fill="#6366f1" font-family="JetBrains Mono,monospace">${deg}°</text>`;
+  }
+  const bw=165,bx2=195,by2=50;
+  g+=`<rect x="${bx2}" y="${by2}" width="${bw}" height="19" rx="5" fill="#e0e7ff"/>`;
+  g+=`<rect x="${bx2}" y="${by2}" width="${Math.round(((cs+1)/2)*bw)}" height="19" rx="5" fill="${col}" opacity="0.8"/>`;
+  g+=`<text x="${bx2+2}" y="${by2+34}" font-size="11" fill="#818cf8" font-family="JetBrains Mono,monospace">-1</text>`;
+  g+=`<text x="${bx2+bw-16}" y="${by2+34}" font-size="11" fill="#818cf8" font-family="JetBrains Mono,monospace">+1</text>`;
+  g+=`<circle cx="${cx}" cy="${cy}" r="6" fill="#6366f1"/>`;
+  document.getElementById('angslsvg').innerHTML=g;
+}
+dAng();
+function cDot(){
+  const a1=+document.getElementById('da1').value||0,a2=+document.getElementById('da2').value||0,a3=+document.getElementById('da3').value||0;
+  const b1=+document.getElementById('db1').value||0,b2=+document.getElementById('db2').value||0,b3=+document.getElementById('db3').value||0;
+  const p1=a1*b1,p2=a2*b2,p3=a3*b3,dot=p1+p2+p3;
+  const ma=Math.sqrt(a1*a1+a2*a2+a3*a3),mb=Math.sqrt(b1*b1+b2*b2+b3*b3);
+  const cosT=ma&&mb?Math.min(1,Math.max(-1,dot/(ma*mb))):0;
+  document.getElementById('dout').textContent=`Step 1 — multiply pairs:\n  ${a1}×${b1}=${p1},   ${a2}×${b2}=${p2},   ${a3}×${b3}=${p3}\n\nStep 2 — sum:\n  a·b = ${p1}+${p2}+${p3} = ${dot}\n\n|a|=${ma.toFixed(4)},  |b|=${mb.toFixed(4)}\nθ = ${(Math.acos(cosT)*180/Math.PI).toFixed(2)}°\n\n${Math.abs(dot)<0.001?'→ PERPENDICULAR (dot=0)!':dot>0?'→ Positive: same direction':'→ Negative: opposing'}`;
+}
+function cCross(){
+  const a1=+document.getElementById('ca1').value||0,a2=+document.getElementById('ca2').value||0,a3=+document.getElementById('ca3').value||0;
+  const b1=+document.getElementById('cb1').value||0,b2=+document.getElementById('cb2').value||0,b3=+document.getElementById('cb3').value||0;
+  const ci=a2*b3-a3*b2,cj=-(a1*b3-a3*b1),ck=a1*b2-a2*b1;
+  document.getElementById('cout').textContent=`î: ${a2}×${b3}−${a3}×${b2} = ${ci}\nĵ: −(${a1}×${b3}−${a3}×${b1}) = ${cj}\nk̂: ${a1}×${b2}−${a2}×${b1} = ${ck}\n\na×b = ${ci}î + ${cj}ĵ + ${ck}k̂\n|a×b| = ${Math.sqrt(ci*ci+cj*cj+ck*ck).toFixed(4)}\n\nPerp check: (a×b)·a = ${ci*a1+cj*a2+ck*a3} ${Math.abs(ci*a1+cj*a2+ck*a3)<0.001?'≈ 0 ✓':''}`;
+}
+function cSTP(){
+  const a1=+document.getElementById('ta1').value||0,a2=+document.getElementById('ta2').value||0,a3=+document.getElementById('ta3').value||0;
+  const b1=+document.getElementById('tb1').value||0,b2=+document.getElementById('tb2').value||0,b3=+document.getElementById('tb3').value||0;
+  const c1=+document.getElementById('tc1').value||0,c2=+document.getElementById('tc2').value||0,c3=+document.getElementById('tc3').value||0;
+  const det=a1*(b2*c3-b3*c2)-a2*(b1*c3-b3*c1)+a3*(b1*c2-b2*c1);
+  document.getElementById('stpout').textContent=`[a b c] = ${det}\n\nVolume = |${det}| = ${Math.abs(det)} cubic units\n${Math.abs(det)<0.001?'→ COPLANAR (volume=0)!':'→ Vectors are NOT coplanar'}`;
+}
+function cProj(){
+  const a1=+document.getElementById('pa1').value||0,a2=+document.getElementById('pa2').value||0;
+  const b1=+document.getElementById('pb1').value||0,b2=+document.getElementById('pb2').value||0;
+  const dot=a1*b1+a2*b2,bb=b1*b1+b2*b2;
+  if(!bb){document.getElementById('pout').textContent='b cannot be zero.';return;}
+  const sc=dot/bb,px=sc*b1,py=sc*b2;
+  document.getElementById('pout').textContent=`a=[${a1},${a2}]   b=[${b1},${b2}]\n\na·b=${dot},  b·b=${bb}\nScalar proj = ${(dot/Math.sqrt(bb)).toFixed(4)}\nVector proj = [${px.toFixed(4)}, ${py.toFixed(4)}]\nPerp part = [${(a1-px).toFixed(4)}, ${(a2-py).toFixed(4)}]\nCheck: proj·perp = ${(px*(a1-px)+py*(a2-py)).toFixed(6)} ≈ 0 ✓`;
+  const W=320,H=260,cx=80,cy=200,sv=32;let g=grid(cx,cy,W,H,sv);
+  g+=arr(cx,cy,cx+b1*sv,cy-b2*sv,'#a5b4fc',2.8);g+=`<text x="${cx+b1*sv+6}" y="${cy-b2*sv-6}" font-size="14" fill="#6366f1" font-family="JetBrains Mono,monospace">b</text>`;
+  g+=arr(cx,cy,cx+a1*sv,cy-a2*sv,'#7c3aed',3.5);g+=`<text x="${cx+a1*sv+6}" y="${cy-a2*sv-6}" font-size="14" fill="#4c1d95" font-family="JetBrains Mono,monospace">a</text>`;
+  g+=arr(cx,cy,cx+px*sv,cy-py*sv,'#059669',3.5);g+=`<text x="${cx+px*sv+6}" y="${cy-py*sv+16}" font-size="14" fill="#065f46" font-family="JetBrains Mono,monospace">proj</text>`;
+  g+=`<line x1="${cx+a1*sv}" y1="${cy-a2*sv}" x2="${cx+px*sv}" y2="${cy-py*sv}" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="6,3"/>`;
+  g+=`<circle cx="${cx}" cy="${cy}" r="5" fill="#6366f1"/>`;
+  document.getElementById('psvg').innerHTML=g;
+}
+function cSec(type){
+  const a1=+document.getElementById('sa1').value||0,a2=+document.getElementById('sa2').value||0;
+  const b1=+document.getElementById('sb1').value||0,b2=+document.getElementById('sb2').value||0;
+  const m=+document.getElementById('sm').value||1,n=+document.getElementById('sn').value||1;
+  if(type>0){
+    const px=(m*b1+n*a1)/(m+n),py=(m*b2+n*a2)/(m+n);
+    document.getElementById('secout').textContent=`Internal division, ratio ${m}:${n}\nP = (${m}×B + ${n}×A) / ${m+n}\n= (${m}×[${b1},${b2}] + ${n}×[${a1},${a2}]) / ${m+n}\n= (${px.toFixed(4)}, ${py.toFixed(4)})`;
+  } else {
+    if(m===n){document.getElementById('secout').textContent='m cannot equal n for external division.';return;}
+    const px=(m*b1-n*a1)/(m-n),py=(m*b2-n*a2)/(m-n);
+    document.getElementById('secout').textContent=`External division, ratio ${m}:${n}\nP = (${m}×B − ${n}×A) / ${m-n}\n= (${px.toFixed(4)}, ${py.toFixed(4)})`;
+  }
+}
+const WV={king:[0.82,0.44,0.77,0.10,0.91,0.33],queen:[0.81,0.46,0.78,0.11,0.90,0.35],man:[0.41,0.29,0.33,0.08,0.39,0.21],woman:[0.39,0.31,0.34,0.09,0.40,0.22],dog:[0.11,0.73,0.18,0.82,0.05,0.61],cat:[0.10,0.71,0.19,0.80,0.04,0.62],happy:[0.03,0.05,0.12,0.08,0.88,0.09],sad:[0.02,0.04,0.11,0.07,0.12,0.08],paris:[0.70,0.57,0.65,0.23,0.45,0.19],france:[0.71,0.55,0.66,0.22,0.44,0.18]};
+const WC={king:'#4f46e5',queen:'#4f46e5',man:'#ea580c',woman:'#ea580c',dog:'#059669',cat:'#059669',happy:'#d97706',sad:'#dc2626',paris:'#0891b2',france:'#0891b2'};
+function cs(a,b){const d=a.reduce((s,v,i)=>s+v*b[i],0);return d/(Math.sqrt(a.reduce((s,v)=>s+v*v,0))*Math.sqrt(b.reduce((s,v)=>s+v*v,0)));}
+(function(){const c=document.getElementById('wbtns');Object.keys(WV).forEach(w=>{const col=WC[w];c.innerHTML+=`<button style="font-size:14.5px;padding:7px 15px;border-radius:20px;border:1.5px solid ${col}88;color:${col};background:${col}15;margin:4px;cursor:pointer;font-weight:600;" onclick="wn('${w}')">${w}</button>`;});})();
+function wn(w){const v=WV[w],col=WC[w];const sc=Object.entries(WV).filter(([k])=>k!==w).map(([k,u])=>({w:k,s:cs(v,u)})).sort((a,b)=>b.s-a.s).slice(0,5);let h=`<div style="font-size:15.5px;margin-bottom:12px;color:#374151;">Nearest to <strong style="color:${col}">"${w}"</strong> by cosine similarity:</div>`;sc.forEach(({w:w2,s})=>{const c2=WC[w2];h+=`<div class="sim-row"><span class="sim-lbl">"${w2}"</span><div class="sim-trk"><div class="sim-fill" style="width:${Math.max(0,Math.round(s*100))}%;background:${c2}"></div></div><span class="sim-v">${s.toFixed(3)}</span></div>`;});document.getElementById('wout').innerHTML=h;}
+function cCS(){
+  const v=[+document.getElementById('cs1').value||0,+document.getElementById('cs2').value||0,+document.getElementById('cs3').value||0];
+  const res=Object.entries(WV).map(([w,u])=>({w,s:cs(v,u.slice(0,3))})).sort((a,b)=>b.s-a.s).slice(0,5);
+  let h=`<div style="font-size:15.5px;margin-bottom:12px;color:#374151;">Top matches:</div>`;
+  res.forEach(({w,s})=>{const c2=WC[w];h+=`<div class="sim-row"><span class="sim-lbl">"${w}"</span><div class="sim-trk"><div class="sim-fill" style="width:${Math.max(0,Math.round(s*100))}%;background:${c2}"></div></div><span class="sim-v">${s.toFixed(3)}</span></div>`;});
+  document.getElementById('csout').innerHTML=h;
+}
+</script>
+<!-- diagonal background watermark -->
+<div class="wm-diagonal"></div>
+
+<!-- floating bottom-right badge -->
+<div class="wm-badge">
+  <div class="wm-av">YP</div>
+  <div class="wm-txt">
+    <span class="wm-by">Created by</span>
+    <span class="wm-name">Yogita Patil</span>
+  </div>
+</div>
+
+</body>
+</html>
